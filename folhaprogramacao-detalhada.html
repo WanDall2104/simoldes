@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Folha de Programação Detalhada - Simoldes</title>
+    <link rel="shortcut icon" type="imagex/png" href="images/logo-navegador.jpeg">
+    <link rel="stylesheet" href="css/style-folhaprogramacao-detalhada.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Adicionar preconnect para melhorar performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+</head>
+<body>
+    <div class="container">
+        <!-- Seção de cabeçalho com informações do material -->
+        <div class="header-section">
+            <div class="material-info">
+                <div class="info-row">
+                    <span class="info-label">Material:</span>
+                    <span class="info-value" id="materialValue">1730</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Pasta do Programa:</span>
+                    <span class="info-value" id="programPath">U:/FI400/PROGRAMAS/POSICIONADOR/1668/1668_18</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Nome Programador:</span>
+                    <span class="info-value" id="programmerName">diego.verciano</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Tempo Previsto:</span>
+                    <span class="info-value" id="estimatedTime">03:45:00</span>
+                </div>
+            </div>
+            <div class="piece-image">
+                <img src="images/image-molde01.png" alt="Imagem da Peça" id="pieceImage">
+            </div>
+        </div>
+        
+        <!-- Barra de progresso -->
+        <div class="progress-tracker">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total de Programas:</span>
+                    <span class="stat-value" id="totalPrograms">15</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Concluídos:</span>
+                    <span class="stat-value" id="completedPrograms">7</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Pendentes:</span>
+                    <span class="stat-value" id="pendingPrograms">8</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Progresso:</span>
+                    <span class="stat-value" id="progressPercentage">46%</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Conteúdo principal em duas colunas -->
+        <div class="main-content">
+            <!-- Coluna da esquerda com detalhes do programa atual -->
+            <div class="program-details">
+                <div class="program-header">
+                    <h2 class="program-title">Programa: <span id="currentProgramNumber">08</span></h2>
+                    <div class="program-status pending" id="programStatus">Pendente</div>
+                </div>
+                
+                <div class="details-content">
+                    <div class="description-section">
+                        <p class="description-text">
+                            <strong>Comentarios Programador:</strong> "Comentario Programador"
+                        </p>
+                        <p class="description-extra">
+                            <strong>Tipo Percurso:</strong> Furação
+                        </p>
+                        <p class="description-ref">
+                            <strong>Ref:</strong> Centro
+                        </p>
+                    </div>
+                    
+                    <div class="tools-section">
+                        <h3>Ferramentas</h3>
+                        <div class="tools-grid">
+                            <div class="tool-column">
+                                <div class="tool-label">Ferramenta: Ø</div>
+                                <div class="tool-value">48</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Ferramenta: RC</div>
+                                <div class="tool-value">0</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Ferramenta: Bib.</div>
+                                <div class="tool-value">247</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Ferramenta: Alt.</div>
+                                <div class="tool-value">273</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Z Min.</div>
+                                <div class="tool-value">-22</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Sob.Esp. Lat.3D</div>
+                                <div class="tool-value">0</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Sob.Esp. Lat</div>
+                                <div class="tool-value">0</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Sob.Esp. Vert.</div>
+                                <div class="tool-value">3</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Passo: Lat.</div>
+                                <div class="tool-value">0</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Passo: Vert.</div>
+                                <div class="tool-value">0</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Tol.</div>
+                                <div class="tool-value">0.02</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Rot.</div>
+                                <div class="tool-value">796</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Av</div>
+                                <div class="tool-value">48</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Ângulo</div>
+                                <div class="tool-value">1° Aperto</div>
+                            </div>
+                            <div class="tool-column">
+                                <div class="tool-label">Plano Trab.</div>
+                                <div class="tool-value">1° Aperto</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="file-section">
+                        <h3>Arquivos do Programa</h3>
+                        <div class="file-row">
+                            <div class="file-label">Fresa:</div>
+                            <div class="file-value">CABECOTI_TSLX_080D_R2_7D270002_U01</div>
+                        </div>
+                        <div class="file-row">
+                            <div class="file-label">Sub:</div>
+                            <div class="file-value">FRESADO_SAIDA_AFF2_U01</div>
+                        </div>
+                    </div>
+                    
+                    <div class="time-section">
+                        <div class="time-row">
+                            <div class="time-label">
+                                <i class="fas fa-clock"></i> Tempo do Corte:
+                            </div>
+                            <div class="time-value">
+                                <input type="text" id="tempoCortado" value="03:33:12" readonly>
+                            </div>
+                        </div>
+                        <div class="time-row">
+                            <div class="time-label">
+                                <i class="fas fa-hourglass-half"></i> Tempo Total:
+                            </div>
+                            <div class="time-value">
+                                <input type="text" id="tempoTotal" value="03:38:53" readonly>
+                            </div>
+                        </div>
+                        <div class="time-buttons">
+                            <button id="iniciarBtn" class="time-button primary">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button id="pausarBtn" class="time-button red" disabled>
+                                <i class="fas fa-pause"></i> Pausar
+                            </button>
+                            <button id="concluirBtn" class="time-button green" disabled>
+                                <i class="fas fa-check"></i> Concluir Processo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coluna da direita com lista de programas -->
+            <div class="program-list">
+                <h3 class="section-title"><i class="fas fa-list-check"></i> Lista de Programas</h3>
+                <div class="program-items" id="programItems">
+                    <!-- Programas serão gerados dinamicamente via JavaScript -->
+                </div>
+                
+                <!-- Divisor para separar a lista de programas da área de assinatura -->
+                <hr class="program-divider">
+                
+                <!-- Área de assinatura dentro da mesma caixa, abaixo da lista de programas -->
+                <div class="signature-area" id="programSignatureArea">
+                    <h4 class="signature-title">Assinatura do Programa <span id="signatureProgramNumber">-</span></h4>
+                    <canvas id="signature-pad" class="signature-pad"></canvas>
+                    <div class="signature-buttons">
+                        <button type="button" id="clearSignatureBtn" class="signature-btn">Limpar</button>
+                        <button type="button" id="saveSignatureBtn" class="signature-btn primary">Salvar Assinatura</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rodapé com opções de navegação -->
+        <div class="footer-section">
+            <label class="custom-checkbox">
+                <input type="checkbox" id="finishProject">
+                <span class="checkmark"></span>
+                Finalizar Projeto
+            </label>
+            <div class="navigation-buttons">
+                <button id="voltarBtn" class="nav-button">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+                <button id="voltarInicioBtn" class="nav-button">
+                    <i class="fas fa-home"></i> Início
+                </button>
+                <button id="verAmplaBtn" class="nav-button primary">
+                    <i class="fas fa-file-alt"></i> Ver Folha Ampla
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script src="scripts/folha-programacao-detalhada.js"></script>
+</body>
+</html>
+
+
+
+

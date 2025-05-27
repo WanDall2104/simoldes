@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto 1658_18: Sumário</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#67AE6E',
+                        primaryLight: '#8BC792',
+                        primaryDark: '#4A8C52',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style-processos-denker.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4 max-w-6xl">
+        <div class="header flex flex-wrap justify-between bg-white p-6 rounded-lg shadow-md mb-6">
+            <div class="header-left flex-1 min-w-[300px]">
+                <div class="material-info mb-4">
+                    <span class="text-xl font-bold">Material: </span>
+                    <span class="text-xl font-bold text-[#67AE6E]">1730</span>
+                </div>
+                <div class="project-details space-y-2">
+                    <p><b>Impresso:</b> 28/11/2024 - 04:05</p>
+                    <p><b>Pasta dos Programas:</b> <span class="wrapped">U:/F2000/1658_18</span></p>
+                    <p><b>Pasta do Projeto Powermill:</b> <span class="wrapped">L:/Cam Task/MOVIMENTOS-POSTICOS/MOLDE 1658/1658_18</span></p>
+                    <p><b>Programador:</b> diego.verciano</p>
+                    <p><b>Tempo Projeto:</b> 23:50:33</p>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700">Horário de Início:</label>
+                        <input type="datetime-local" id="start-time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#67AE6E] focus:ring focus:ring-[#67AE6E] focus:ring-opacity-50">
+                    </div>
+                </div>
+            </div>
+            <div class="header-right flex items-center justify-center">
+                <img src="/api/placeholder/220/200" alt="Capa do projeto" class="header-image rounded-lg border border-gray-300">
+            </div>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="overall-progress" style="width: 0%">0%</div>
+        </div>
+
+        <form id="machining-steps-form" class="space-y-4">
+            <!-- Step 1 -->
+            <div class="step active" id="step-1">
+                <div class="step-header bg-gray-100 p-4" onclick="toggleStep(1)">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <span class="step-number">01</span>
+                            <span class="step-title font-semibold">Desbaste por Offset - Centro</span>
+                        </div>
+                        <span class="step-status status-pending" id="status-1">Pendente</span>
+                    </div>
+                </div>
+                <div class="step-content p-4">
+                    <p class="step-description text-blue-600 mb-4 font-medium">ATENÇÃO AO CONE - USAR ÁGUA PARA NÃO EMPENAR MUITO</p>
+                    
+                    <div class="parameter-grid grid grid-cols-3 md:grid-cols-5 gap-4 mb-6">
+                        <div class="parameter">
+                            <div class="parameter-label">Ferramenta Ø</div>
+                            <div class="parameter-value special-value">80</div>
+                        </div>
+                        <div class="parameter">
+                            <div class="parameter-label">Raio de Canto</div>
+                            <div class="parameter-value special-value">2</div>
+                        </div>
+                        <div class="parameter">
+                            <div class="parameter-label">Comprimento</div>
+                            <div class="parameter-value">50</div>
+                        </div>
+                        <div class="parameter">
+                            <div class="parameter-label">Altura</div>
+                            <div class="parameter-value">50</div>
+                        </div>
+                        <div class="parameter">
+                            <div class="parameter-label">Z Mínimo</div>
+                            <div class="parameter-value">-145</div>
+                        </div>
+                        <div class="parameter">
+                            <div class="parameter-label">Sob. Esp. Lateral</div>
+                            <div class="parameter-value">-0,5</div>
+                        </div>
+                        <div class="parameter">
+                            <div class="parameter-label">Sob. Esp. Vertical</div>
+                            <div class="parameter-value">0</div>
+                        </div>
+                        <div class="parameter">
+                            <div class="parameter-label">Passo Lateral</div>
+                            <div class="parameter-value">53</div>
+                        </div>
+                        <div class="parameter">
+                            <div class="parameter-label">Passo Vertical</div>
+                            <div class="parameter-value">2</div>
+                        </div>
+                    </div>
+                    
+                    <div class="completion-box bg-gray-50 p-4 rounded-lg">
+                        <div class="time-info flex flex-wrap justify-between mb-4">
+                            <div class="mb-2">
+                                <span class="time-label text-gray-600">Tempo de Corte:</span>
+                                <span class="time-value font-medium">16:00:00</span>
+                            </div>
+                            <div>
+                                <span class="time-label text-gray-600">Tempo Total:</span>
+                                <span class="time-value font-medium">16:03:40</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Campo de medição -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Medição:</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#67AE6E] focus:ring focus:ring-[#67AE6E] focus:ring-opacity-50" placeholder="Insira a medição">
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button type="button" onclick="completeStep(1)" class="bg-[#67AE6E] hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                Concluir Etapa
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="step" id="step-2">
+                <div class="step-header bg-gray-100 p-4" onclick="toggleStep(2)">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <span class="step-number bg-gray-400">02</span>
+                            <span class="step-title font-semibold">Desbaste por Offset - Centro</span>
+                        </div>
+                        <span class="step-status status-blocked" id="status-2">Bloqueado</span>
+                    </div>
+                </div>
+                <div class="step-content p-4 hidden">
+                    <!-- Conteúdo similar ao passo 1 -->
+                </div>
+            </div>
+            
+            <!-- Outros passos... -->
+            
+            <!-- Finalização do Projeto -->
+            <div class="finalization mt-6">
+                <h3 class="text-xl font-bold text-[#67AE6E] mb-4">Finalização do Projeto</h3>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Usuário Responsável:</label>
+                    <input type="text" id="responsible-user" class="w-full p-2 border border-gray-300 rounded" value="diego.verciano" readonly>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Assinatura:</label>
+                    <canvas id="signature-pad" class="signature-pad w-full h-32"></canvas>
+                    <div class="flex justify-between mt-2">
+                        <button type="button" onclick="clearSignature()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded text-sm">Limpar</button>
+                        <button type="button" onclick="captureSignature()" class="bg-[#67AE6E] hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm">Capturar Assinatura</button>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Horário de Finalização:</label>
+                    <input type="datetime-local" id="end-time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#67AE6E] focus:ring focus:ring-[#67AE6E] focus:ring-opacity-50" readonly>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button type="button" onclick="finalizeProject()" class="bg-[#67AE6E] hover:bg-green-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">Finalizar Projeto</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script>
+        // Variáveis globais
+        let currentStep = 1;
+        let totalSteps = 7;
+        let signaturePad = null;
+        let signatureData = null;
+        const loggedUser = 'diego.verciano'; // Você pode pegar isso do seu sistema de autenticação
+        
+        // Inicialização quando o documento estiver pronto
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar pad de assinatura
+            const canvas = document.getElementById('signature-pad');
+            if (canvas) {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                signaturePad = new SignaturePad(canvas, {
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    penColor: 'rgb(0, 0, 0)'
+                });
+            }
+            
+            // Definir horário de início como agora
+            const now = new Date();
+            const startTimeInput = document.getElementById('start-time');
+            if (startTimeInput) {
+                startTimeInput.value = formatDateTime(now);
+            }
+            
+            // Atualizar progresso inicial
+            updateProgress();
+        });
+        
+        // Função para formatar data e hora para input datetime-local
+        function formatDateTime(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+        
+        // Função para alternar a visibilidade de um passo
+        function toggleStep(stepNumber) {
+            const step = document.getElementById(`step-${stepNumber}`);
+            const content = step.querySelector('.step-content');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+            } else {
+                content.classList.add('hidden');
+            }
+        }
+        
+        // Função para completar um passo
+        function completeStep(stepNumber) {
+            if (stepNumber !== currentStep) return;
+            
+            // Validar medição
+            const medicao = document.querySelector('input[placeholder="Insira a medição"]').value;
+            if (!medicao) {
+                showNotification('Por favor, insira a medição antes de concluir a etapa.', 'red');
+                return;
+            }
+            
+            // Coletar dados para o CSV
+            const stepData = {
+                project_id: '1658_18',
+                step_number: stepNumber,
+                step_title: document.querySelector(`#step-${stepNumber} .step-title`)?.textContent || '',
+                completion_time: new Date().toISOString(),
+                programmer: loggedUser,
+                material: '1730',
+                medicao: medicao
+            };
+            
+            // Enviar dados para o backend
+            fetch('/complete_step', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(stepData)
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                
+                // Verificar se a resposta é um arquivo
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                    // É um arquivo Excel, fazer download
+                    return response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        
+                        // Pegar o nome do arquivo do header Content-Disposition
+                        const disposition = response.headers.get('content-disposition');
+                        const filenameMatch = disposition && disposition.match(/filename="(.+)"/);
+                        const filename = filenameMatch ? filenameMatch[1] : `log_etapa_${stepNumber}.xlsx`;
+                        
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        
+                        // Atualizar UI
+                        showNotification('Etapa concluída! Arquivo de log baixado.', 'green');
+                        
+                        // Marcar passo como concluído
+                        const statusElement = document.getElementById(`status-${stepNumber}`);
+                        if (statusElement) {
+                            statusElement.textContent = 'Concluído';
+                            statusElement.classList.remove('bg-yellow-100', 'text-yellow-800');
+                            statusElement.classList.add('bg-green-100', 'text-green-800');
+                        }
+                        
+                        // Avançar para o próximo passo
+                        currentStep++;
+                        updateProgress();
+                        
+                        // Abrir próximo passo se existir
+                        if (currentStep <= totalSteps) {
+                            toggleStep(currentStep);
+                        }
+                    });
+                } else {
+                    // Resposta não é um arquivo, tratar como JSON
+                    return response.json();
+                }
+            })
+            .catch(error => {
+                showNotification('Erro ao processar a etapa: ' + error.message, 'red');
+                console.error('Erro completo:', error);
+            });
+        }
+        
+        // Função para mostrar notificação
+        function showNotification(message, color) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded shadow-lg text-white bg-${color}-500`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        // Função para atualizar a barra de progresso
+        function updateProgress() {
+            const progressBar = document.getElementById('overall-progress');
+            if (progressBar) {
+                const progress = Math.floor(((currentStep - 1) / totalSteps) * 100);
+                progressBar.style.width = `${progress}%`;
+                progressBar.textContent = `${progress}%`;
+            }
+        }
+        
+        // Função para limpar a assinatura
+        function clearSignature() {
+            signaturePad.clear();
+            signatureData = null;
+        }
+        
+        // Função para capturar a assinatura
+        function captureSignature() {
+            if (signaturePad.isEmpty()) {
+                alert('Por favor, forneça sua assinatura antes de capturar.');
+                return;
+            }
+            
+            signatureData = signaturePad.toDataURL();
+            alert('Assinatura capturada com sucesso!');
+        }
+        
+        // Função para finalizar o projeto
+        function finalizeProject() {
+            // Validar assinatura
+            if (!signatureData) {
+                showNotification('Por favor, capture sua assinatura antes de finalizar o projeto.', 'red');
+                return;
+            }
+            
+            // Definir horário de finalização como agora
+            const now = new Date();
+            const endTimeInput = document.getElementById('end-time');
+            endTimeInput.value = formatDateTime(now);
+            
+            // Coletar todos os dados do projeto
+            const projectData = {
+                project_id: '1658_18',
+                material: '1730',
+                programmer: 'diego.verciano',
+                start_time: document.getElementById('start-time').value,
+                end_time: endTimeInput.value,
+                responsible_user: document.getElementById('responsible-user').value,
+                signature: signatureData,
+                completed_steps: currentStep - 1,
+                total_steps: totalSteps
+            };
+            
+            // Mostrar indicador de carregamento
+            showNotification('Finalizando projeto...', 'blue');
+            
+            // Enviar dados para o backend Python
+            fetch('/finalize_project', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(projectData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                    });
+                }
+                
+                // Verificar se a resposta é um arquivo Excel
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                    // É um arquivo Excel, fazer download
+                    return response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        
+                        // Pegar o nome do arquivo do header Content-Disposition
+                        const disposition = response.headers.get('content-disposition');
+                        const filenameMatch = disposition && disposition.match(/filename="(.+)"/);
+                        const filename = filenameMatch ? filenameMatch[1] : `projeto_${projectData.project_id}.xlsx`;
+                        
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        
+                        // Desabilitar botão de finalização
+                        document.querySelector('.finalization button').disabled = true;
+                        
+                        // Mostrar notificação de sucesso
+                        showNotification('Projeto finalizado com sucesso! Arquivo Excel baixado.', 'green');
+                        
+                        // Redirecionar para histórico após um breve atraso
+                        setTimeout(() => {
+                            window.location.href = '/historico';
+                        }, 2000);
+                    });
+                } else {
+                    // Resposta não é um arquivo, tratar como JSON
+                    return response.json().then(data => {
+                        if (data.success) {
+                            // Desabilitar botão de finalização
+                            document.querySelector('.finalization button').disabled = true;
+                            
+                            // Sucesso
+                            showNotification('Projeto finalizado com sucesso!', 'green');
+                            setTimeout(() => {
+                                window.location.href = data.redirect || '/historico';
+                            }, 2000);
+                        } else {
+                            showNotification('Erro ao finalizar projeto: ' + data.error, 'red');
+                        }
+                    });
+                }
+            })
+            .catch((error) => {
+                showNotification('Erro ao finalizar projeto: ' + error, 'red');
+            });
+        }
+        
+        // Função para exibir resumo (opcional)
+        function displaySummary() {
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+            const responsibleUser = document.getElementById('responsible-user').value;
+            
+            console.log('Resumo do Projeto:');
+            console.log(`- Início: ${startTime}`);
+            console.log(`- Término: ${endTime}`);
+            console.log(`- Responsável: ${responsibleUser}`);
+            console.log(`- Assinatura: ${signatureData ? 'Capturada' : 'Não capturada'}`);
+        }
+        
+        // Implementação básica de SignaturePad para navegadores sem suporte a canvas
+        function SignaturePad(canvas, options) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
+            this.options = options || {};
+            this.drawing = false;
+            this.points = [];
+            
+            // Configurações iniciais
+            this.ctx.fillStyle = this.options.backgroundColor || 'rgb(255, 255, 255)';
+            this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+            this.ctx.strokeStyle = this.options.penColor || 'rgb(0, 0, 0)';
+            this.ctx.lineWidth = 2;
+            this.ctx.lineCap = 'round';
+            this.ctx.lineJoin = 'round';
+            
+            // Event listeners
+            const self = this;
+            
+            canvas.addEventListener('mousedown', function(e) {
+                self._mouseDown(e);
+            });
+            
+            canvas.addEventListener('mousemove', function(e) {
+                self._mouseMove(e);
+            });
+            
+            canvas.addEventListener('mouseup', function() {
+                self._mouseUp();
+            });
+            
+            canvas.addEventListener('touchstart', function(e) {
+                self._touchStart(e);
+            });
+            
+            canvas.addEventListener('touchmove', function(e) {
+                self._touchMove(e);
+            });
+            
+            canvas.addEventListener('touchend', function() {
+                self._touchEnd();
+            });
+            
+            // Métodos
+            this.clear = function() {
+                this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                this.ctx.fillStyle = this.options.backgroundColor || 'rgb(255, 255, 255)';
+                this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+                this.points = [];
+            };
+            
+            this.isEmpty = function() {
+                return this.points.length === 0;
+            };
+            
+            this.toDataURL = function(type) {
+                return canvas.toDataURL(type);
+            };
+            
+            // Métodos privados
+            this._mouseDown = function(e) {
+                this.drawing = true;
+                const point = this._getPoint(e);
+                this.points.push(point);
+                this._draw(point);
+            };
+            
+            this._mouseMove = function(e) {
+                if (!this.drawing) return;
+                const point = this._getPoint(e);
+                this.points.push(point);
+                this._draw(point);
+            };
+            
+            this._mouseUp = function() {
+                this.drawing = false;
+            };
+            
+            this._touchStart = function(e) {
+                if (e.touches.length === 1) {
+                    e.preventDefault();
+                    this.drawing = true;
+                    const point = this._getTouchPoint(e);
+                    this.points.push(point);
+                    this._draw(point);
+                }
+            };
+            
+            this._touchMove = function(e) {
+                if (!this.drawing || e.touches.length !== 1) return;
+                e.preventDefault();
+                const point = this._getTouchPoint(e);
+                this.points.push(point);
+                this._draw(point);
+            };
+            
+            this._touchEnd = function() {
+                this.drawing = false;
+            };
+            
+            this._getPoint = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            };
+            
+            this._getTouchPoint = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: e.touches[0].clientX - rect.left,
+                    y: e.touches[0].clientY - rect.top
+                };
+            };
+            
+            this._draw = function(point) {
+                if (this.points.length < 2) return;
+                
+                const prevPoint = this.points[this.points.length - 2];
+                this.ctx.beginPath();
+                this.ctx.moveTo(prevPoint.x, prevPoint.y);
+                this.ctx.lineTo(point.x, point.y);
+                this.ctx.stroke();
+            };
+        }
+    </script>
+</body>
+</html>

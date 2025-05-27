@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Execução de Projetos - Simoldes Aços Brasil</title>
+    <link rel="shortcut icon" type="imagex/png" href="images/logo-navegador.jpeg">
+    <link rel="stylesheet" href="css/style-projetos.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-left">
+            <img src="images/logo-navegador-semfundo.png" alt="Logo" class="logo-star">
+            <div class="user-info">
+                <p class="user-name">Nome Usuário</p>
+                <p class="user-role">Operador</p>
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <img src="images/logo-navegador-semfundo.png" alt="Logo" class="logo-star-title">
+            <h1>Sistema de Usinagem</h1>
+        </div>
+        
+        <div class="header-right">
+            <button class="exit-button">SAIR <img class="icon-exit" src="images/icon-sair.png" alt="Icon Sair"></button>
+        </div>
+    </header>
+    
+    <div class="content-container">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="projetos.html" class="active">Projetos</a></li>
+                <li><a href="historico.html">Histórico</a></li>
+            </ul>
+        </aside>
+        
+        <main>
+            <div class="projetos-container">
+                <h2 class="page-title">Execução de Projetos</h2>
+                
+                 <!--<div class="navigation-tabs">
+                    <button class="tab-button active">Início</button>
+                    <button class="tab-button">Projetos</button>
+                    <button class="tab-button">Histórico</button>
+                </div> -->
+                
+                <div class="projetos-list">
+                    <div class="projeto-item">
+                        <div class="projeto-info">
+                            <div class="projeto-name">"Nome do projeto"</div>
+                            <div class="projeto-machine">"Número Máquina"</div>
+                        </div>
+                        <div class="projeto-status">
+                            <span class="status-label">Status Projeto: <span class="status-pendente">Pendente</span></span>
+                            <button class="view-button">Visualizar projeto</button>
+                        </div>
+                    </div>
+                    
+                    <div class="projeto-item">
+                        <div class="projeto-info">
+                            <div class="projeto-name">"Nome do projeto"</div>
+                            <div class="projeto-machine">"Número Máquina"</div>
+                        </div>
+                        <div class="projeto-status">
+                            <span class="status-label">Status Projeto: <span class="status-pendente">Pendente</span></span>
+                            <button class="view-button">Visualizar projeto</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // JavaScript para navegação entre abas
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                // Add active class to clicked button
+                button.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

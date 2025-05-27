@@ -1,0 +1,325 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body {
+    font-family: "Poppins", sans-serif;
+    font-size: 16px; /* Aumentado de tamanho base */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f5f5f5;
+    height: 100vh; /* Ocupar toda a altura da viewport */
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    width: 100%;
+    max-width: 100%; /* Remover limitação de largura máxima */
+    margin: 0 auto; /* Remover margem vertical */
+    border: 1px solid #333;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    flex: 1; /* Fazer o container crescer para ocupar todo o espaço disponível */
+    display: flex;
+    flex-direction: column;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    height: 100%; /* Fazer a tabela ocupar toda a altura do container */
+    table-layout: fixed; /* Melhorar o desempenho e controle do layout */
+}
+
+/* Ajustar as proporções das linhas para ocupar todo o espaço vertical */
+tr {
+    height: auto;
+}
+
+/* A linha da imagem deve ocupar o espaço restante */
+tr:nth-child(3) {
+    height: 100%;
+}
+
+td {
+    border: 1px solid #333;
+    padding: 10px 14px; /* Aumentado para acomodar fontes maiores */
+    vertical-align: middle;
+}
+
+.header-left {
+    width: 25%;
+    vertical-align: middle;
+}
+
+.header-center {
+    width: 50%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.header-right {
+    width: 25%;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.nav-button {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.nav-button i {
+    font-size: 14px;
+}
+
+.nav-button {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #0F5132;
+    font-weight: bold;
+    font-size: 16px; /* Aumentado de 14px */
+    background-color: #F5F9F7;
+    border-radius: 10px;
+    padding: 12px; /* Aumentado para melhor clicabilidade */
+    width: 110px; /* Aumentado de 100px */
+}
+
+.nav-button img {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+.nav-button.right img {
+    margin-right: 0;
+    margin-left: 5px;
+}
+
+.machine-title {
+    color: blue;
+    font-size: 30px; /* Aumentado de 26px */
+    font-weight: bold;
+    margin: 3px 0;
+}
+
+.subtitle {
+    margin: 3px 0;
+    font-size: 14px; /* Aumentado de 12px */
+    font-weight: 700;
+    color: #0F5132;
+}
+
+.program-id {
+    color: red;
+    font-weight: bold;
+    margin: 3px 0;
+    font-size: 16px; /* Aumentado de 14px */
+}
+
+.info-row td {
+    vertical-align: middle;
+}
+
+.status-open {
+    background-color: #F5F9F7;
+    color: #75BA75;
+    font-weight: 1000;
+    text-align: center;
+    font-size: 22px; /* Aumentado de 18px */
+}
+
+.material-info {
+    color: red;
+    text-align: right;
+    font-weight: bold;
+    margin: 3px 0;
+    font-size: 16px; /* Aumentado */
+}
+
+.span-info-material {
+    color: #000000;
+}
+
+.image-container {
+    text-align: center;
+    padding: 10px;
+    height: 100%; /* Fazer o container da imagem ocupar toda a altura disponível */
+    position: relative; /* Para posicionamento absoluto da imagem */
+}
+
+.machine-image {
+    max-width: 100%;
+    max-height: 100%; /* Limitar a altura da imagem ao container */
+    object-fit: contain; /* Manter proporção da imagem */
+    display: block;
+    margin: 0 auto;
+}
+
+.machine-image {
+    transition: transform 0.3s ease;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.machine-image:hover {
+    transform: scale(1.02);
+}
+
+.footer-left {
+    width: 40%;
+    font-size: 15px; /* Aumentado de 13px */
+    font-weight: 700;
+    color: #0F5132;
+}
+
+.span-info {
+    width: 40%;
+    font-size: 15px; /* Aumentado */
+    font-weight: 700;
+    color: #000000;
+}
+
+.span-info {
+    font-weight: 600;
+    color: #000000;
+}
+
+.span-info-material {
+    font-weight: 600;
+    color: #0f5132;
+}
+
+.footer-right {
+    width: 60%;
+    font-size: 15px; /* Aumentado de 13px */
+    font-weight: 700;
+    color: #0F5132;
+}
+
+.description-row {
+    text-align: center;
+}
+
+.description-label {
+    font-size: 17px; /* Aumentado de 15px */
+    color: #0F5132;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.red-text {
+    color: red;
+    font-weight: 650;
+    font-size: 24px; /* Aumentado de 20px */
+}
+
+.date-info {
+    font-size: 15px; /* Aumentado de 13px */
+    font-weight: 700;
+    color: #0F5132;
+    margin-bottom: 10px;
+}
+
+.project-time {
+    text-align: right;
+    font-size: 15px; /* Aumentado de 13px */
+    font-weight: 700;
+    color: #0F5132;
+    margin: 3px 0;
+}
+
+.programmer-name {
+    font-size: 15px; /* Aumentado de 13px */
+    color: #0F5132;
+    font-weight: 700;
+}
+
+/* Media queries para responsividade */
+@media screen and (max-width: 768px) {
+    .header-left, .header-center, .header-right {
+        width: 33.33%; /* Distribuir igualmente em telas menores */
+    }
+    
+    .nav-button {
+        width: auto; /* Ajustar largura dos botões */
+        font-size: 14px;
+    }
+    
+    .machine-title {
+        font-size: 26px;
+    }
+    
+    .subtitle, .program-id {
+        font-size: 13px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
+    td {
+        padding: 6px 10px;
+    }
+    
+    .machine-title {
+        font-size: 22px;
+    }
+    
+    .subtitle, .program-id, .footer-left, .footer-right, .date-info, .project-time, .programmer-name {
+        font-size: 12px;
+    }
+    
+    .status-open {
+        font-size: 18px;
+    }
+    
+    .red-text {
+        font-size: 20px;
+    }
+}
+
+/* Garantir que a página ocupe toda a tela em dispositivos móveis */
+@media screen and (max-height: 600px) {
+    .image-container {
+        padding: 5px;
+    }
+    
+    td {
+        padding: 4px 6px;
+    }
+}
+
+/* Melhorar a aparência da tabela */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Melhorar a responsividade */
+@media screen and (max-width: 600px) {
+    .nav-button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .machine-title {
+        font-size: 20px;
+    }
+}

@@ -1,0 +1,143 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #e6f3e6 0%, #c1e1c3 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(22, 101, 52, 0.1), rgba(22, 101, 52, 0.1)),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%23166534" fill-opacity="0.05"><path d="M11 18 Q50 10, 89 18 L89 82 Q50 90, 11 82 Z"/></g></svg>');
+    pointer-events: none;
+    z-index: -1;
+}
+
+.login-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(22, 101, 52, 0.1);
+    overflow: hidden;
+    border: 1px solid rgba(22, 101, 52, 0.1);
+}
+
+.login-header {
+    background: linear-gradient(to right, #166534, #14532d);
+    color: white;
+    text-align: center;
+    padding: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-header h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.login-header p {
+    color: #86efac;
+    font-size: 14px;
+}
+
+.login-form {
+    padding: 35px 35px 10px 35px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #166534;
+    opacity: 0.7;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 2px solid #4ade80;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+    border-color: #166534;
+}
+
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #166534, #14532d);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.login-button:hover {
+    opacity: 0.9;
+}
+
+.forgot-password {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.forgot-password a {
+    color: #166534;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.forgot-password a:hover {
+    color: #14532d;
+    text-decoration: underline;
+}
+
+.cadastro-section {
+    text-align: center;
+    margin-top: 0px;
+    padding: 15px;
+    background-color: #f0f9f4;
+}
+
+.cadastro-link {
+    color: #166534;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        width: 95%;
+        margin: 0 10px;
+    }
+}

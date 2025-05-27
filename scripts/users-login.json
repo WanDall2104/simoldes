@@ -1,0 +1,22 @@
+{
+    "usuarios": [
+      {
+        "matricula": "12345",
+        "senha": "senha123",
+        "nome": "Leonardo",
+        "nivelAcesso": "operador"
+      },
+      {
+        "matricula": "54321",
+        "senha": "senha456",
+        "nome": "Gabriel",
+        "nivelAcesso": "admin"
+      },
+      {
+        "matricula": "67890",
+        "senha": "senha789",
+        "nome": "Vinicius",
+        "nivelAcesso": "operador"
+      }
+    ]
+  }
