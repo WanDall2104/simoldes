@@ -7,6 +7,9 @@
     <link rel="shortcut icon" type="imagex/png" href="images/logo-navegador.jpeg">
     <link rel="stylesheet" href="css/style-folhaprogramacao-detalhada.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Adicionar Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/controls/OrbitControls.js"></script>
     <!-- Adicionar preconnect para melhorar performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -239,11 +242,39 @@
         </div>
     </div>
     
+    <!-- Modal para visualização 3D -->
+    <div id="modal3D" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Visualização 3D da Peça</h2>
+                <span class="close-modal" id="close3DModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="container3D"></div>
+                <div class="zoom-controls">
+                    <button id="zoomIn" class="zoom-btn" title="Ampliar">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button id="zoomOut" class="zoom-btn" title="Diminuir">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button id="resetZoom" class="zoom-btn" title="Resetar visualização">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script src="scripts/folha-programacao-detalhada.js"></script>
+    <script src="scripts/3d-viewer.js"></script>
 </body>
 </html>
+
+
+
 
 
 
