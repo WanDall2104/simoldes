@@ -1,0 +1,123 @@
+/* Estilos para o modal */
+#projectModalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: var(--primary, #0f5132);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-modal {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.info-section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.info-row {
+    margin-bottom: 10px;
+}
+
+.info-label {
+    font-weight: bold;
+}
+
+.progress-section {
+    margin-bottom: 20px;
+}
+
+.progress-title {
+    margin-bottom: 10px;
+}
+
+.progress-bar-container {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    height: 20px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+}
+
+.programs-section {
+    margin-bottom: 20px;
+}
+
+.programs-title {
+    margin-bottom: 15px;
+}
+
+.programs-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.program-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.program-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: white;
+}
+
+.program-status.completed {
+    background-color: #4CAF50;
+}
+
+.program-status.pending {
+    background-color: #ff9800;
+}

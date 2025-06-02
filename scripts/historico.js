@@ -1,79 +1,30 @@
-// Dados de exemplo para o histórico de projetos
-const historicoData = [
-    {
-        id: 1,
-        title: "Molde para Painel Frontal",
-        code: "PF-2023-001",
-        machine: "M1-2023",
-        responsible: "Leonardo",
-        completionDate: "2023-08-15",
-        status: "completed"
-    },
-    {
-        id: 2,
-        title: "Molde para Carcaça de Motor",
-        code: "CM-2023-042",
-        machine: "M2-2023",
-        responsible: "Vinicius",
-        completionDate: "2023-07-20",
-        status: "completed"
-    },
-    {
-        id: 3,
-        title: "Molde para Peças Plásticas",
-        code: "PP-2023-018",
-        machine: "M3-2023",
-        responsible: "Leonardo",
-        completionDate: "2023-05-30",
-        status: "completed"
-    },
-    {
-        id: 4,
-        title: "Molde para Componentes Eletrônicos",
-        code: "CE-2023-027",
-        machine: "M1-2023",
-        responsible: "Vinicius",
-        completionDate: "2023-09-15",
-        status: "completed"
-    },
-    {
-        id: 5,
-        title: "Molde para Peças Automotivas",
-        code: "PA-2023-033",
-        machine: "M2-2023",
-        responsible: "Leonardo",
-        completionDate: "2023-08-30",
-        status: "completed"
-    },
-    {
-        id: 6,
-        title: "Molde para Equipamentos Médicos",
-        code: "EM-2023-009",
-        machine: "M3-2023",
-        responsible: "Vinicius",
-        completionDate: "2023-06-15",
-        status: "completed"
-    }
-];
-
-// Configurações de paginação
-const itemsPerPage = 6;
+// Variáveis globais
+// Não declarar historicoData aqui, pois já está declarada em historico-data.js
+let filteredItems = [];
 let currentPage = 1;
-let filteredItems = [...historicoData];
+const itemsPerPage = 10;
 
 // Elementos DOM
 const historicoContainer = document.getElementById('historicoContainer');
-const searchInput = document.getElementById('historicoSearch');
 const searchBtn = document.getElementById('searchBtn');
+const historicoSearch = document.getElementById('historicoSearch');
 const dateFilter = document.getElementById('dateFilter');
 const machineFilter = document.getElementById('machineFilter');
-const currentPageEl = document.getElementById('currentPage');
-const totalPagesEl = document.getElementById('totalPages');
 const prevPageBtn = document.getElementById('prevPage');
 const nextPageBtn = document.getElementById('nextPage');
+const currentPageEl = document.getElementById('currentPage');
+const totalPagesEl = document.getElementById('totalPages');
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("Inicializando página de histórico");
+    
+    // Verificar se historicoData existe
+    if (typeof historicoData === 'undefined') {
+        console.error("Erro: historicoData não está definido!");
+        return;
+    }
+    
     // Verificar nível de acesso do usuário
     const userRole = localStorage.getItem('userRole');
     const userName = localStorage.getItem('currentUser');
@@ -84,14 +35,16 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    console.log(`Usuário logado: ${userName}, Função: ${userRole}`);
+    
     // Filtrar histórico baseado no nível de acesso
     if (userRole === 'operador') {
-        // Operadores só veem seus próprios projetos históricos
+        // Operadores só veem seus próprios projetos
         filteredItems = historicoData.filter(item => 
-            item.responsible === userName
+            item.responsible === userName || item.operator === userName
         );
     } else if (userRole === 'admin') {
-        // Administradores veem todo o histórico
+        // Administradores veem todos os projetos
         filteredItems = [...historicoData];
     } else {
         // Outros usuários são redirecionados
@@ -100,12 +53,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    console.log(`Itens filtrados: ${filteredItems.length}`);
+    
     // Carregar histórico inicial
     renderHistorico();
     
     // Configurar eventos
     searchBtn.addEventListener('click', applyFilters);
-    searchInput.addEventListener('keypress', function(e) {
+    historicoSearch.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             applyFilters();
         }
@@ -120,15 +75,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Adicionar evento para botões de detalhes
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('view-details-btn')) {
-            const projectId = e.target.getAttribute('data-id');
-            viewProjectDetails(projectId);
+            console.log('Botão Ver Detalhes clicado');
+            const projectId = parseInt(e.target.getAttribute('data-id'));
+            console.log(`ID do projeto: ${projectId}`);
+            
+            // Encontrar o projeto pelo ID
+            const project = historicoData.find(p => p.id === projectId);
+            if (project) {
+                console.log("Projeto encontrado:", project);
+                showProjectModal(project);
+            } else {
+                console.error("Projeto não encontrado com ID:", projectId);
+                console.log("Dados disponíveis:", historicoData);
+                alert("Projeto não encontrado!");
+            }
         }
     });
 });
 
 // Função para aplicar filtros
 function applyFilters() {
-    const searchTerm = searchInput.value.toLowerCase();
+    const searchTerm = historicoSearch.value.toLowerCase();
     const dateValue = dateFilter.value;
     const machineValue = machineFilter.value;
     const userRole = localStorage.getItem('userRole');
@@ -136,8 +103,9 @@ function applyFilters() {
     
     // Filtrar por termo de busca e nível de acesso
     filteredItems = historicoData.filter(item => {
-        // Verificar se o usuário tem acesso a este item do histórico
-        const hasAccess = userRole === 'admin' || (userRole === 'operador' && item.responsible === userName);
+        // Verificar se o usuário tem acesso a este projeto
+        const hasAccess = userRole === 'admin' || 
+                         (userRole === 'operador' && (item.responsible === userName || item.operator === userName));
         
         if (!hasAccess) return false;
         
@@ -147,31 +115,29 @@ function applyFilters() {
             item.responsible.toLowerCase().includes(searchTerm) ||
             item.machine.toLowerCase().includes(searchTerm);
         
+        // Filtrar por máquina
+        const matchesMachine = 
+            machineValue === 'all' || 
+            item.machine.toLowerCase().includes(machineValue);
+        
         // Filtrar por data
         let matchesDate = true;
         if (dateValue !== 'all') {
             const today = new Date();
-            const itemDate = new Date(item.completionDate);
+            const projectDate = new Date(item.completionDate || item.lastUpdate);
             
             if (dateValue === 'today') {
-                matchesDate = isSameDay(today, itemDate);
+                matchesDate = isSameDay(today, projectDate);
             } else if (dateValue === 'week') {
-                matchesDate = isThisWeek(itemDate, today);
+                matchesDate = isThisWeek(projectDate, today);
             } else if (dateValue === 'month') {
-                matchesDate = isThisMonth(itemDate, today);
+                matchesDate = isThisMonth(projectDate, today);
             } else if (dateValue === 'year') {
-                matchesDate = isThisYear(itemDate, today);
+                matchesDate = isThisYear(projectDate, today);
             }
         }
         
-        // Filtrar por máquina
-        let matchesMachine = true;
-        if (machineValue !== 'all') {
-            const machineCode = machineValue.toUpperCase();
-            matchesMachine = item.machine.includes(machineCode);
-        }
-        
-        return matchesSearch && matchesDate && matchesMachine;
+        return matchesSearch && matchesMachine && matchesDate;
     });
     
     // Resetar para a primeira página e renderizar
@@ -222,16 +188,12 @@ function renderHistorico() {
         historicoContainer.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-history"></i>
-                <h3>Nenhum registro encontrado</h3>
-                <p>Tente ajustar os filtros para encontrar o que procura.</p>
+                <h3>Nenhum projeto encontrado</h3>
+                <p>Tente ajustar os filtros para encontrar projetos no histórico.</p>
             </div>
         `;
         return;
     }
-    
-    // Obter informações do usuário
-    const userRole = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('currentUser');
     
     // Renderizar cada item do histórico
     currentItems.forEach(item => {
@@ -239,6 +201,7 @@ function renderHistorico() {
         const statusText = getStatusText(item.status);
         
         // Verificar se o usuário é responsável por este projeto
+        const userName = localStorage.getItem('currentUser');
         const isResponsible = item.responsible === userName;
         
         const itemCard = document.createElement('div');
@@ -265,7 +228,7 @@ function renderHistorico() {
                 </div>
                 <div class="detail-item">
                     <i class="fas fa-calendar-check"></i>
-                    <span>Concluído em: <strong>${formatDate(item.completionDate)}</strong></span>
+                    <span>Concluído em: <strong>${item.completionDate ? formatDate(item.completionDate) : 'Em andamento'}</strong></span>
                 </div>
             </div>
             <div class="projeto-footer">
@@ -278,30 +241,9 @@ function renderHistorico() {
     });
 }
 
-// Função para visualizar detalhes do projeto
-function viewProjectDetails(projectId) {
-    const project = historicoData.find(p => p.id == projectId);
-    if (!project) return;
-    
-    // Verificar se o usuário tem acesso a este projeto
-    const userRole = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('currentUser');
-    
-    const hasAccess = userRole === 'admin' || (userRole === 'operador' && project.responsible === userName);
-    
-    if (!hasAccess) {
-        alert('Você não tem permissão para acessar este projeto');
-        return;
-    }
-    
-    alert(`Detalhes do projeto "${project.title}" serão exibidos em uma página ou modal.`);
-    // Aqui você pode implementar a navegação para uma página de detalhes
-    // ou abrir um modal com os detalhes completos
-    console.log('Projeto selecionado:', project);
-}
-
 // Funções auxiliares
 function formatDate(dateString) {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR');
 }
@@ -315,7 +257,7 @@ function getStatusText(status) {
     }
 }
 
-// Funções auxiliares para filtro de data
+// Funções para verificação de datas
 function isSameDay(date1, date2) {
     return date1.getDate() === date2.getDate() &&
            date1.getMonth() === date2.getMonth() &&
@@ -323,15 +265,15 @@ function isSameDay(date1, date2) {
 }
 
 function isThisWeek(date, today) {
-    const todayDate = today.getDate();
-    const dayOfWeek = today.getDay();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(todayDate - dayOfWeek);
+    const firstDayOfWeek = new Date(today);
+    firstDayOfWeek.setDate(today.getDate() - today.getDay());
+    firstDayOfWeek.setHours(0, 0, 0, 0);
     
-    const endOfWeek = new Date(today);
-    endOfWeek.setDate(todayDate + (6 - dayOfWeek));
+    const lastDayOfWeek = new Date(firstDayOfWeek);
+    lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+    lastDayOfWeek.setHours(23, 59, 59, 999);
     
-    return date >= startOfWeek && date <= endOfWeek;
+    return date >= firstDayOfWeek && date <= lastDayOfWeek;
 }
 
 function isThisMonth(date, today) {
@@ -342,8 +284,5 @@ function isThisMonth(date, today) {
 function isThisYear(date, today) {
     return date.getFullYear() === today.getFullYear();
 }
-
-
-
 
 

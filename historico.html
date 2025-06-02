@@ -7,6 +7,7 @@
     <link rel="shortcut icon" type="imagex/png" href="images/logo-navegador.jpeg">
     <link rel="stylesheet" href="css/style-home.css">
     <link rel="stylesheet" href="css/style-historico.css">
+    <link rel="stylesheet" href="css/style-modal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Adicionar o script de informações do usuário primeiro -->
     <script src="scripts/user-info.js"></script>
@@ -93,7 +94,7 @@
                         </div>
                         <div class="projeto-footer">
                             <span class="status-badge status-completed">Concluído</span>
-                            <button class="view-details-btn">Ver Detalhes</button>
+                            <button class="view-details-btn" data-id="1">Ver Detalhes</button>
                         </div>
                     </div>
                     
@@ -118,7 +119,7 @@
                         </div>
                         <div class="projeto-footer">
                             <span class="status-badge status-completed">Concluído</span>
-                            <button class="view-details-btn">Ver Detalhes</button>
+                            <button class="view-details-btn" data-id="2">Ver Detalhes</button>
                         </div>
                     </div>
                 </div>
@@ -136,11 +137,59 @@
         <p>© 2025 Simoldes Aços Brasil. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Adicione os scripts -->
+    <!-- Adicione os scripts na ordem correta -->
     <script src="scripts/chatbot-global.js"></script>
-    <!-- Carregar os dados do histórico -->
+    <!-- Primeiro carregamos os dados -->
     <script src="scripts/historico-data.js"></script>
-    <!-- Carregar o script de histórico depois do user-info.js -->
+    <!-- Depois o manipulador de modal -->
+    <script src="scripts/modal-handler.js"></script>
+    <!-- Por último, o script principal que usa os dados e o modal -->
     <script src="scripts/historico.js"></script>
+
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Detalhes do Projeto</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="project-info-section">
+                    <div class="info-row">
+                        <span class="info-label">Código:</span>
+                        <span id="modalCode" class="info-value"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Máquina:</span>
+                        <span id="modalMachine" class="info-value"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Responsável:</span>
+                        <span id="modalResponsible" class="info-value"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Concluído em:</span>
+                        <span id="modalCompletionDate" class="info-value"></span>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <h3>Progresso do Projeto</h3>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="modalProgressBar"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span id="modalProgressPercentage">0%</span>
+                    </div>
+                </div>
+                
+                <div class="programs-section">
+                    <h3>Programas</h3>
+                    <div id="modalProgramsList" class="programs-list">
+                        <!-- Programas serão inseridos aqui via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
