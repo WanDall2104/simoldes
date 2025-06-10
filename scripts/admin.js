@@ -167,9 +167,6 @@ async function abrirModalEdicao(matricula) {
         tipoOperador.checked = true;
     }
     
-    // Limpar campo de senha
-    document.getElementById('editSenha').value = '';
-    
     // Exibir o modal
     document.getElementById('editModal').style.display = 'block';
 }
@@ -182,7 +179,6 @@ async function salvarEdicaoUsuario(event) {
     const nome = document.getElementById('editNome').value.trim();
     const matricula = document.getElementById('editMatricula').value.trim();
     const tipoUsuario = document.querySelector('input[name="editTipoUsuario"]:checked').value;
-    const senha = document.getElementById('editSenha').value;
     
     // Validações
     if (!nome || !matricula) {
@@ -211,11 +207,6 @@ async function salvarEdicaoUsuario(event) {
     dados.usuarios[index].nome = nome;
     dados.usuarios[index].matricula = matricula;
     dados.usuarios[index].nivelAcesso = tipoUsuario === 'administrador' ? 'admin' : 'operador';
-    
-    // Atualizar senha apenas se uma nova senha foi fornecida
-    if (senha) {
-        dados.usuarios[index].senha = senha;
-    }
     
     // Salvar os dados atualizados
     const sucesso = await salvarUsuarios(dados);
@@ -408,5 +399,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         buscarUsuarios('');
     }
 });
+
+
 
 
