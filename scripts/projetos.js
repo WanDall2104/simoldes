@@ -121,14 +121,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Filtrar projetos baseado no nível de acesso
-    if (userRole === 'operador') {
+    if (userRole === 'administrador' || userRole === 'admin') {
+        // Administradores veem todos os projetos
+        filteredProjects = [...projectsData];
+    } else if (userRole === 'operador') {
         // Operadores só veem seus próprios projetos
         filteredProjects = projectsData.filter(project => 
             project.operator === userName
         );
-    } else if (userRole === 'admin') {
-        // Administradores veem todos os projetos
-        filteredProjects = [...projectsData];
     } else {
         // Outros usuários são redirecionados
         alert('Você não tem permissão para acessar esta página');

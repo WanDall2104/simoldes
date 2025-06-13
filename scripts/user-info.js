@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (userRole && userRoleElement) {
         // Converter o valor do nível de acesso para exibição
-        const displayRole = userRole === 'admin' ? 'Administrador' : 'Operador';
+        const displayRole = (userRole === 'admin' || userRole === 'administrador') ? 'Administrador' : 'Operador';
         userRoleElement.textContent = displayRole;
         
         // Garantir que o texto seja exibido corretamente
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Verificar se o usuário é administrador para mostrar o menu de administração
-    if (userRole === 'admin') {
+    if (userRole === 'admin' || userRole === 'administrador') {
         // Verificar se o menu lateral existe
         const sidebar = document.querySelector('.sidebar ul');
         if (sidebar) {

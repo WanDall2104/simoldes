@@ -38,16 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(`Usuário logado: ${userName}, Função: ${userRole}`);
     
     // Filtrar histórico baseado no nível de acesso
-    if (userRole === 'operador') {
+    if (userRole === 'administrador' || userRole === 'admin') {
+        // Administradores veem todos os projetos
+        filteredItems = [...historicoData];
+    } else if (userRole === 'operador') {
         // Operadores só veem seus próprios projetos
         filteredItems = historicoData.filter(item => 
             item.responsible === userName || item.operator === userName
         );
-    } else if (userRole === 'admin') {
-        // Administradores veem todos os projetos
-        filteredItems = [...historicoData];
     } else {
-        // Outros usuários são redirecionados
         alert('Você não tem permissão para acessar esta página');
         window.location.href = 'index.html';
         return;

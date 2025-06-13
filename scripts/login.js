@@ -93,32 +93,25 @@ async function fazerLogin(event) {
     }
     
     try {
-        // Carregar dados de usuários
-        const response = await fetch('scripts/users-login.json');
-        if (!response.ok) {
-            throw new Error('Não foi possível carregar os dados de usuários');
-        }
-        const data = await response.json();
+        // Envia para a API do backend
+        const resposta = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ matricula, senha })
+        });
+        const resultado = await resposta.json();
         
-        // Encontrar usuário
-        const usuario = data.usuarios.find(
-            user => user.matricula === matricula && user.senha === senha
-        );
-        
-        if (usuario) {
+        if (resultado.sucesso) {
             // Salvar informações do usuário no localStorage
-            localStorage.setItem('currentUser', usuario.nome);
-            localStorage.setItem('userRole', usuario.nivelAcesso);
-            localStorage.setItem('userMatricula', usuario.matricula);
-            
-            mostrarMensagem('success', `Bem-vindo(a), ${usuario.nome}!`);
-            
-            // Redirecionar para a página principal
+            localStorage.setItem('currentUser', resultado.usuario.nome);
+            localStorage.setItem('userRole', resultado.usuario.tipoUsuario || resultado.usuario.nivelAcesso);
+            localStorage.setItem('userMatricula', resultado.usuario.matricula);
+            mostrarMensagem('success', `Bem-vindo(a), ${resultado.usuario.nome}!`);
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 1500);
         } else {
-            mostrarMensagem('error', 'Matrícula ou senha incorretos!');
+            mostrarMensagem('error', resultado.mensagem || 'Matrícula ou senha incorretos!');
         }
     } catch (error) {
         console.error('Erro ao fazer login:', error);

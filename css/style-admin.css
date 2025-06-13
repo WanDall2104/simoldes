@@ -231,3 +231,82 @@
 .close-modal:hover {
     color: #333;
 }
+
+/* Alerta customizado */
+.custom-alert {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  background: #1b5e20;
+  color: #fff;
+  padding: 18px 32px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  font-size: 1.1rem;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, top 0.3s;
+}
+.custom-alert.show {
+  opacity: 1;
+  pointer-events: auto;
+  top: 50px;
+}
+.custom-alert.error {
+  background: #c62828;
+}
+.custom-alert.success {
+  background: #388e3c;
+}
+
+/* Modal de confirmação customizado */
+.custom-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.3);
+  align-items: center;
+  justify-content: center;
+}
+.custom-modal-content {
+  background: #fff;
+  padding: 32px 24px 24px 24px;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  min-width: 320px;
+  text-align: center;
+}
+.custom-modal-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+.custom-modal-ok {
+  background: #388e3c;
+  color: #fff;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.custom-modal-ok:hover {
+  background: #256029;
+}
+.custom-modal-cancel {
+  background: #c62828;
+  color: #fff;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.custom-modal-cancel:hover {
+  background: #8b1a1a;
+}
