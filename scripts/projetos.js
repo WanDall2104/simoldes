@@ -319,6 +319,30 @@ function renderProjects() {
     });
 }
 
+// Função de alerta customizado (caso não exista neste arquivo)
+function showCustomAlert(message, type = 'error') {
+  // Remove alerta anterior se existir
+  const oldAlert = document.querySelector('.custom-alert');
+  if (oldAlert) oldAlert.remove();
+
+  // Cria o alerta
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `custom-alert ${type}`;
+  alertDiv.textContent = message;
+  document.body.appendChild(alertDiv);
+
+  // Mostra o alerta
+  setTimeout(() => {
+    alertDiv.classList.add('show');
+  }, 10);
+
+  // Esconde e remove depois de 3 segundos
+  setTimeout(() => {
+    alertDiv.classList.remove('show');
+    setTimeout(() => alertDiv.remove(), 300);
+  }, 3000);
+}
+
 // Função para visualizar detalhes do projeto
 function viewProjectDetails(projectId) {
     const project = projectsData.find(p => p.id == projectId);
@@ -328,10 +352,10 @@ function viewProjectDetails(projectId) {
     const userRole = localStorage.getItem('userRole');
     const userName = localStorage.getItem('currentUser');
     
-    const hasAccess = userRole === 'admin' || (userRole === 'operador' && project.operator === userName);
+    const hasAccess = (userRole === 'admin' || userRole === 'administrador') || (userRole === 'operador' && project.operator === userName);
     
     if (!hasAccess) {
-        alert('Você não tem permissão para acessar este projeto');
+        showCustomAlert('Você não tem permissão para acessar este projeto!', 'error');
         return;
     }
     
