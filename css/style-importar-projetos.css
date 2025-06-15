@@ -1,0 +1,111 @@
+/* Estilo para a página de importação de projetos - clean e profissional */
+
+.import-section {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    padding: 32px 24px;
+    max-width: 700px;
+    margin: 32px auto;
+}
+
+.import-section form {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.import-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f5132;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+#importarExcelForm input[type="file"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fafafa;
+    font-size: 1rem;
+}
+
+#importarExcelForm button[type="submit"] {
+    background: #0f5132;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#importarExcelForm button[type="submit"]:hover {
+    background: #0a3e26;
+}
+
+#previewContainer {
+    margin-top: 24px;
+    overflow-x: auto;
+}
+
+#previewContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fafbfc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+#previewContainer th, #previewContainer td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+    font-size: 1rem;
+}
+
+#previewContainer tr:last-child td {
+    border-bottom: none;
+}
+
+#previewContainer th {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #0f5132;
+}
+
+#importarBtn {
+    background: #0f5132;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 28px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: background 0.2s;
+    display: block;
+    margin-left: auto;
+}
+
+#importarBtn:hover {
+    background: #0a3e26;
+}
+
+@media (max-width: 600px) {
+    .import-section {
+        padding: 16px 6px;
+    }
+    #previewContainer th, #previewContainer td {
+        padding: 7px 6px;
+        font-size: 0.95rem;
+    }
+    #importarBtn {
+        width: 100%;
+        padding: 12px 0;
+    }
+}

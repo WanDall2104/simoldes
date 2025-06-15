@@ -65,6 +65,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Busca dinâmica enquanto digita
+    historicoSearch.addEventListener('input', function() {
+        applyFilters();
+    });
+    
     dateFilter.addEventListener('change', applyFilters);
     machineFilter.addEventListener('change', applyFilters);
     
@@ -90,6 +95,62 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Exibir menu de importação só para admin
+    if (userRole === 'admin' || userRole === 'administrador') {
+        const importarMenu = document.getElementById('importarProjetosMenu');
+        if(importarMenu) importarMenu.style.display = '';
+    }
+    // Alternar entre histórico e importação
+    const importarLink = document.getElementById('importarProjetosLink');
+    const importarSection = document.getElementById('importarProjetosSection');
+    const dashboardContent = document.querySelector('.dashboard-content');
+    if(importarLink && importarSection) {
+        importarLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Esconde histórico, mostra importação
+            dashboardContent.querySelectorAll('> *:not(#importarProjetosSection)').forEach(el => el.style.display = 'none');
+            importarSection.style.display = '';
+        });
+    }
+    // Voltar para histórico ao recarregar
+    if(importarSection) importarSection.style.display = 'none';
+    // Lógica de upload e pré-visualização
+    const excelForm = document.getElementById('importarExcelForm');
+    const excelInput = document.getElementById('excelFileInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const importarBtn = document.getElementById('importarBtn');
+    let previewData = [];
+    if(excelForm && excelInput && previewContainer && importarBtn) {
+        excelForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const file = excelInput.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(firstSheet, {header:1});
+                previewData = json;
+                // Montar tabela de pré-visualização
+                let html = '<table border="1" style="width:100%;border-collapse:collapse;">';
+                json.forEach((row, idx) => {
+                    html += '<tr>' + row.map(cell => `<td>${cell ?? ''}</td>`).join('') + '</tr>';
+                });
+                html += '</table>';
+                previewContainer.innerHTML = html;
+                importarBtn.style.display = json.length > 1 ? '' : 'none';
+            };
+            reader.readAsArrayBuffer(file);
+        });
+        importarBtn.addEventListener('click', function() {
+            if(previewData.length > 1) {
+                alert('Importação simulada! (Aqui você pode enviar para o backend ou atualizar a lista de projetos)');
+                // Aqui você pode adicionar lógica para realmente importar os dados
+            }
+        });
+    }
 });
 
 // Função para aplicar filtros
@@ -100,12 +161,16 @@ function applyFilters() {
     const userRole = localStorage.getItem('userRole');
     const userName = localStorage.getItem('currentUser');
     
+    // LOGS DE DEPURAÇÃO
+    console.log('userRole:', userRole);
+    console.log('userName:', userName);
+    console.log('searchTerm:', searchTerm);
+    
     // Filtrar por termo de busca e nível de acesso
     filteredItems = historicoData.filter(item => {
         // Verificar se o usuário tem acesso a este projeto
-        const hasAccess = userRole === 'admin' || 
+        const hasAccess = userRole === 'admin' || userRole === 'administrador' || 
                          (userRole === 'operador' && (item.responsible === userName || item.operator === userName));
-        
         if (!hasAccess) return false;
         
         const matchesSearch = 
@@ -114,6 +179,10 @@ function applyFilters() {
             item.responsible.toLowerCase().includes(searchTerm) ||
             item.machine.toLowerCase().includes(searchTerm);
         
+        // LOG DE DEPURAÇÃO PARA CADA ITEM
+        if (matchesSearch) {
+            console.log('Item encontrado:', item);
+        }
         // Filtrar por máquina
         const matchesMachine = 
             machineValue === 'all' || 

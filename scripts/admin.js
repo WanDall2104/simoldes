@@ -1,10 +1,16 @@
 // Função para carregar usuários na tabela (com botões de ação)
-async function carregarUsuarios() {
+async function carregarUsuarios(filtro = '') {
   const resposta = await fetch('http://localhost:3000/api/usuarios');
   const usuarios = await resposta.json();
   const tbody = document.getElementById('usersTableBody');
   tbody.innerHTML = '';
-  usuarios.forEach(usuario => {
+  // Filtrar usuários pelo termo digitado (nome ou matrícula)
+  const termo = filtro.trim().toLowerCase();
+  const usuariosFiltrados = usuarios.filter(usuario =>
+    usuario.nome.toLowerCase().includes(termo) ||
+    usuario.matricula.toLowerCase().includes(termo)
+  );
+  (termo ? usuariosFiltrados : usuarios).forEach(usuario => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${usuario.nome}</td>
@@ -80,6 +86,14 @@ document.addEventListener('DOMContentLoaded', function () {
   // Carrega usuários ao abrir a página, se a aba estiver ativa
   if (document.querySelector('.tab-button[data-tab="manage-users"]').classList.contains('active')) {
     carregarUsuarios();
+  }
+
+  // Busca dinâmica de usuários
+  const searchInput = document.getElementById('searchUser');
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      carregarUsuarios(searchInput.value);
+    });
   }
 });
 

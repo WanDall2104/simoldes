@@ -1,60 +1,92 @@
 // Script para exibir informações do usuário em todas as páginas
 document.addEventListener('DOMContentLoaded', function() {
-    // Obter informações do usuário do localStorage
+    // Exibir nome e papel do usuário
     const userName = localStorage.getItem('currentUser');
     const userRole = localStorage.getItem('userRole');
-    
-    // Atualizar elementos na página
     const userNameElement = document.getElementById('userName');
     const userRoleElement = document.getElementById('userRole');
-    
-    if (userName && userNameElement) {
-        userNameElement.textContent = userName;
-    }
-    
+    if (userName && userNameElement) userNameElement.textContent = userName;
     if (userRole && userRoleElement) {
-        // Converter o valor do nível de acesso para exibição
         const displayRole = (userRole === 'admin' || userRole === 'administrador') ? 'Administrador' : 'Operador';
         userRoleElement.textContent = displayRole;
-        
-        // Garantir que o texto seja exibido corretamente
-        console.log('Nível de acesso:', userRole);
-        console.log('Exibindo como:', displayRole);
     }
-    
-    // Verificar se o usuário é administrador para mostrar o menu de administração
-    if (userRole === 'admin' || userRole === 'administrador') {
-        // Verificar se o menu lateral existe
-        const sidebar = document.querySelector('.sidebar ul');
-        if (sidebar) {
-            // Verificar se o item de administração já existe
-            const adminMenuItem = Array.from(sidebar.querySelectorAll('li a')).find(a => 
-                a.getAttribute('href') === 'admin.html'
-            );
-            
-            // Adicionar item de menu de administração se não existir
-            if (!adminMenuItem) {
-                const adminItem = document.createElement('li');
-                adminItem.innerHTML = `<a href="admin.html"><i class="fas fa-users-cog"></i> Administração</a>`;
-                sidebar.appendChild(adminItem);
-            }
+
+    // Esconder todos os menus Administração para operadores
+    document.querySelectorAll('.sidebar a[href="admin.html"]').forEach(function(link) {
+        if (userRole !== 'admin' && userRole !== 'administrador') {
+            link.parentElement.style.display = 'none';
         }
+    });
+
+    // Exibir menu de importação só para admin
+    if (userRole === 'admin' || userRole === 'administrador') {
+        const importarMenu = document.getElementById('importarProjetosMenu');
+        if(importarMenu) importarMenu.style.display = '';
     }
-    
-    // Configurar botão de logout
+    // Alternar entre dashboard e importação
+    const importarLink = document.getElementById('importarProjetosLink');
+    const importarSection = document.getElementById('importarProjetosSection');
+    const dashboardContent = document.querySelector('.dashboard-content');
+    if(importarLink && importarSection) {
+        importarLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Esconde dashboard, mostra importação
+            dashboardContent.querySelectorAll('> *:not(#importarProjetosSection)').forEach(el => el.style.display = 'none');
+            importarSection.style.display = '';
+        });
+    }
+    // Voltar para dashboard ao recarregar
+    if(importarSection) importarSection.style.display = 'none';
+    // Lógica de upload e pré-visualização
+    const excelForm = document.getElementById('importarExcelForm');
+    const excelInput = document.getElementById('excelFileInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const importarBtn = document.getElementById('importarBtn');
+    let previewData = [];
+    if(excelForm && excelInput && previewContainer && importarBtn) {
+        excelForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const file = excelInput.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(firstSheet, {header:1});
+                previewData = json;
+                // Montar tabela de pré-visualização
+                let html = '<table border="1" style="width:100%;border-collapse:collapse;">';
+                json.forEach((row, idx) => {
+                    html += '<tr>' + row.map(cell => `<td>${cell ?? ''}</td>`).join('') + '</tr>';
+                });
+                html += '</table>';
+                previewContainer.innerHTML = html;
+                importarBtn.style.display = json.length > 1 ? '' : 'none';
+            };
+            reader.readAsArrayBuffer(file);
+        });
+        importarBtn.addEventListener('click', function() {
+            if(previewData.length > 1) {
+                alert('Importação simulada! (Aqui você pode enviar para o backend ou atualizar a lista de projetos)');
+                // Aqui você pode adicionar lógica para realmente importar os dados
+            }
+        });
+    }
+
+    // Botão de logout
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevenir comportamento padrão do link
+            e.preventDefault();
             localStorage.removeItem('currentUser');
             localStorage.removeItem('userRole');
             localStorage.removeItem('userMatricula');
             window.location.href = 'login-page.html';
         });
     }
-    
-    // Verificar se o usuário está logado, se não, redirecionar para a página de login
-    // Exceto se já estiver na página de login
+
+    // Redirecionar para login se não estiver logado
     const currentPage = window.location.pathname.split('/').pop();
     if (!userName && !currentPage.includes('login')) {
         window.location.href = 'login-page.html';

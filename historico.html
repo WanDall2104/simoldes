@@ -37,7 +37,8 @@
                 <li><a href="index.html"><i class="fas fa-home"></i> Início</a></li>
                 <li><a href="projetos.html"><i class="fas fa-folder-open"></i> Projetos</a></li>
                 <li><a href="historico.html" class="active"><i class="fas fa-history"></i> Histórico</a></li>
-                <!-- O item de administração será adicionado via JavaScript se o usuário for admin -->
+                <li><a href="importar-projetos.html"><i class="fas fa-file-import"></i> Importar Projetos</a></li>
+                <li><a href="admin.html"><i class="fas fa-users-cog"></i> Administração</a></li>
             </ul>
         </aside>
         
@@ -145,6 +146,9 @@
     <script src="scripts/modal-handler.js"></script>
     <!-- Por último, o script principal que usa os dados e o modal -->
     <script src="scripts/historico.js"></script>
+
+    <!-- SheetJS para leitura de Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <div id="projectModal" class="modal">
         <div class="modal-content">
