@@ -48,6 +48,7 @@
                     <div class="tabs">
                         <button class="tab-button active" data-tab="manual">Entrada Manual</button>
                         <button class="tab-button" data-tab="arquivo">Importar via Arquivo</button>
+                        <button class="tab-button" data-tab="programas">Inserir novos Programas</button>
                     </div>
                     
                     <div class="tab-content">
@@ -180,18 +181,6 @@
                                     </div>
                                 </div>
 
-                                <div class="form-section">
-                                    <h3>Tempos</h3>
-                                    <div class="form-group">
-                                        <label for="cutTime">Tempo do Corte:</label>
-                                        <input type="time" id="cutTime" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="totalTime">Tempo Total:</label>
-                                        <input type="time" id="totalTime" required>
-                                    </div>
-                                </div>
-
                                 <button type="submit" class="submit-button">Salvar Projeto</button>
                             </form>
                         </div>
@@ -213,6 +202,139 @@
                                 </div>
                                 <div id="previewContainer"></div>
                                 <button id="importarBtn" class="import-button">Importar Dados</button>
+                            </form>
+                        </div>
+
+                        <!-- Aba de Inserir Programas -->
+                        <div id="programas" class="tab-pane">
+                            <!-- Seleção do Projeto -->
+                            <form id="selecionarProjetoForm">
+                                <div class="form-section">
+                                    <h3>Selecionar Projeto</h3>
+                                    <div class="form-group">
+                                        <label for="projectNumber">Número do Projeto:</label>
+                                        <input type="text" id="projectNumber" required>
+                                        <button type="button" id="buscarProjetoBtn">Buscar Projeto</button>
+                                    </div>
+                                    <div id="projetoInfoContainer">
+                                        <!-- Informações do projeto selecionado aparecem aqui -->
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- Opções de Inserção -->
+                            <div id="opcoesInsercao" style="display:none; margin-top: 20px;">
+                                <h3>Como deseja inserir o novo programa?</h3>
+                                <button type="button" id="btnManual">Inserir Manualmente</button>
+                                <button type="button" id="btnArquivo">Importar de Arquivo (Excel/JSON)</button>
+                            </div>
+
+                            <!-- Formulário Manual -->
+                            <form id="adicionarProgramaForm" style="display:none;">
+                                <div class="form-section">
+                                    <h3>Informações do Novo Programa</h3>
+                                    <div class="form-group">
+                                        <label for="novoProgramNumber">Número do Programa:</label>
+                                        <input type="text" id="novoProgramNumber" required>
+                                    </div>
+                                    <!-- Outros campos do programa -->
+                                </div>
+                                <div class="form-section">
+                                    <h3>Ferramentas</h3>
+                                    <div class="tools-grid">
+                                        <div class="form-group">
+                                            <label for="toolDiameter">Ferramenta: Ø</label>
+                                            <input type="number" id="toolDiameter" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="toolRC">Ferramenta: RC</label>
+                                            <input type="number" id="toolRC" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="toolBib">Ferramenta: Bib.</label>
+                                            <input type="number" id="toolBib" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="toolAlt">Ferramenta: Alt.</label>
+                                            <input type="number" id="toolAlt" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="zMin">Z Min.</label>
+                                            <input type="number" id="zMin" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lat3D">Sob.Esp. Lat.3D</label>
+                                            <input type="number" id="lat3D" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lat">Sob.Esp. Lat</label>
+                                            <input type="number" id="lat" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="vert">Sob.Esp. Vert.</label>
+                                            <input type="number" id="vert" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="latStep">Passo: Lat.</label>
+                                            <input type="number" id="latStep" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="vertStep">Passo: Vert.</label>
+                                            <input type="number" id="vertStep" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tolerance">Tol.</label>
+                                            <input type="number" step="0.01" id="tolerance" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="rotation">Rot.</label>
+                                            <input type="number" id="rotation" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="advance">Av</label>
+                                            <input type="number" id="advance" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="angle">Ângulo</label>
+                                            <input type="text" id="angle" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="workPlane">Plano Trab.</label>
+                                            <input type="text" id="workPlane" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-section">
+                                    <h3>Arquivos do Programa</h3>
+                                    <div class="form-group">
+                                        <label for="fresaFile">Fresa:</label>
+                                        <input type="text" id="fresaFile" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="subFile">Sub:</label>
+                                        <input type="text" id="subFile" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="submit-button">Adicionar Programa ao Projeto</button>
+                            </form>
+
+                            <!-- Formulário de Importação -->
+                            <form id="importarProgramaArquivoForm" style="display:none;">
+                                <div class="form-section">
+                                    <h3>Importar Programa via Arquivo</h3>
+                                    <div class="file-type-selector">
+                                        <label>
+                                            <input type="radio" name="fileType" value="excel" checked> Excel (.xlsx, .xls)
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="fileType" value="json"> JSON (.json)
+                                        </label>
+                                    </div>
+                                    <input type="file" id="fileInput" accept=".xlsx, .xls, .json" required />
+                                    <button type="submit">Pré-visualizar</button>
+                                </div>
+                                <div id="previewContainer"></div>
+                                <button id="importarBtn" class="import-button">Importar Programa</button>
                             </form>
                         </div>
                     </div>

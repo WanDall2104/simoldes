@@ -200,4 +200,106 @@ document.addEventListener('DOMContentLoaded', function() {
         previewContainer.innerHTML = '';
         fileInput.value = '';
     });
+
+    // --- LÓGICA PARA A ABA DE INSERIR PROGRAMAS ---
+    // Elementos da aba de programas
+    const selecionarProjetoForm = document.getElementById('selecionarProjetoForm');
+    const opcoesInsercao = document.getElementById('opcoesInsercao');
+    const btnManual = document.getElementById('btnManual');
+    const btnArquivo = document.getElementById('btnArquivo');
+    const adicionarProgramaForm = document.getElementById('adicionarProgramaForm');
+    const importarProgramaArquivoForm = document.getElementById('importarProgramaArquivoForm');
+    const projetoInfoContainer = document.getElementById('projetoInfoContainer');
+    const buscarProjetoBtn = document.getElementById('buscarProjetoBtn');
+    
+    // Esconde tudo ao carregar
+    if(opcoesInsercao) opcoesInsercao.style.display = 'none';
+    if(adicionarProgramaForm) adicionarProgramaForm.style.display = 'none';
+    if(importarProgramaArquivoForm) importarProgramaArquivoForm.style.display = 'none';
+
+    // Ao buscar projeto, mostra opções de inserção
+    if(buscarProjetoBtn) {
+        buscarProjetoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const projectNumber = document.getElementById('projectNumber').value.trim();
+            if(!projectNumber) {
+                alert('Informe o número do projeto!');
+                return;
+            }
+            // Aqui você pode buscar informações do projeto no backend, se desejar
+            projetoInfoContainer.innerHTML = `<p>Projeto selecionado: <strong>${projectNumber}</strong></p>`;
+            opcoesInsercao.style.display = 'block';
+            adicionarProgramaForm.style.display = 'none';
+            importarProgramaArquivoForm.style.display = 'none';
+        });
+    }
+
+    // Alterna para formulário manual
+    if(btnManual) {
+        btnManual.addEventListener('click', function() {
+            adicionarProgramaForm.style.display = 'block';
+            importarProgramaArquivoForm.style.display = 'none';
+        });
+    }
+    // Alterna para formulário de arquivo
+    if(btnArquivo) {
+        btnArquivo.addEventListener('click', function() {
+            adicionarProgramaForm.style.display = 'none';
+            importarProgramaArquivoForm.style.display = 'block';
+        });
+    }
+
+    // Exemplo de submit do formulário manual de programa
+    if(adicionarProgramaForm) {
+        adicionarProgramaForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Coleta os dados do formulário manual
+            const novoPrograma = {
+                numero: document.getElementById('novoProgramNumber').value,
+                ferramentas: {
+                    diameter: document.getElementById('toolDiameter').value,
+                    rc: document.getElementById('toolRC').value,
+                    bib: document.getElementById('toolBib').value,
+                    alt: document.getElementById('toolAlt').value,
+                    zMin: document.getElementById('zMin').value,
+                    lat3D: document.getElementById('lat3D').value,
+                    lat: document.getElementById('lat').value,
+                    vert: document.getElementById('vert').value,
+                    latStep: document.getElementById('latStep').value,
+                    vertStep: document.getElementById('vertStep').value,
+                    tolerance: document.getElementById('tolerance').value,
+                    rotation: document.getElementById('rotation').value,
+                    advance: document.getElementById('advance').value,
+                    angle: document.getElementById('angle').value,
+                    workPlane: document.getElementById('workPlane').value
+                },
+                arquivos: {
+                    fresa: document.getElementById('fresaFile').value,
+                    sub: document.getElementById('subFile').value
+                }
+            };
+            // Aqui você pode enviar para o backend ou salvar localmente
+            alert('Programa adicionado manualmente ao projeto!');
+            adicionarProgramaForm.reset();
+        });
+    }
+
+    // Exemplo de submit do formulário de importação de programa
+    if(importarProgramaArquivoForm) {
+        importarProgramaArquivoForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = importarProgramaArquivoForm.querySelector('#fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Selecione um arquivo!');
+                return;
+            }
+            const fileType = importarProgramaArquivoForm.querySelector('input[name="fileType"]:checked').value;
+            if (fileType === 'excel') {
+                handleExcelFile(file);
+            } else {
+                handleJsonFile(file);
+            }
+        });
+    }
 });
