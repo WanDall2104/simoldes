@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style-home.css">
     <link rel="stylesheet" href="css/style-importar-projetos.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="scripts/user-info.js"></script>
     <script src="scripts/chatbot-global.js"></script>
     <script src="scripts/importar-projetos.js"></script>
@@ -191,13 +191,10 @@
                                 <div class="file-import-section">
                                     <div class="file-type-selector">
                                         <label>
-                                            <input type="radio" name="fileType" value="excel" checked> Excel (.xlsx, .xls)
-                                        </label>
-                                        <label>
-                                            <input type="radio" name="fileType" value="json"> JSON (.json)
+                                            <input type="radio" name="fileType" value="pdf" checked> PDF (.pdf)
                                         </label>
                                     </div>
-                                    <input type="file" id="fileInput" accept=".xlsx, .xls, .json" required />
+                                    <input type="file" id="fileInput" accept=".pdf" required />
                                     <button type="submit">Pré-visualizar</button>
                                 </div>
                                 <div id="previewContainer"></div>
@@ -226,7 +223,7 @@
                             <div id="opcoesInsercao" style="display:none; margin-top: 20px;">
                                 <h3>Como deseja inserir o novo programa?</h3>
                                 <button type="button" id="btnManual">Inserir Manualmente</button>
-                                <button type="button" id="btnArquivo">Importar de Arquivo (Excel/JSON)</button>
+                                <button type="button" id="btnArquivo">Importar de Arquivo (PDF)</button>
                             </div>
 
                             <!-- Formulário Manual -->
@@ -243,76 +240,76 @@
                                     <h3>Ferramentas</h3>
                                     <div class="tools-grid">
                                         <div class="form-group">
-                                            <label for="toolDiameter">Ferramenta: Ø</label>
-                                            <input type="number" id="toolDiameter" required>
+                                            <label for="novoToolDiameter">Ferramenta: Ø</label>
+                                            <input type="number" id="novoToolDiameter" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="toolRC">Ferramenta: RC</label>
-                                            <input type="number" id="toolRC" required>
+                                            <label for="novoToolRC">Ferramenta: RC</label>
+                                            <input type="number" id="novoToolRC" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="toolBib">Ferramenta: Bib.</label>
-                                            <input type="number" id="toolBib" required>
+                                            <label for="novoToolBib">Ferramenta: Bib.</label>
+                                            <input type="number" id="novoToolBib" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="toolAlt">Ferramenta: Alt.</label>
-                                            <input type="number" id="toolAlt" required>
+                                            <label for="novoToolAlt">Ferramenta: Alt.</label>
+                                            <input type="number" id="novoToolAlt" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="zMin">Z Min.</label>
-                                            <input type="number" id="zMin" required>
+                                            <label for="novoZMin">Z Min.</label>
+                                            <input type="number" id="novoZMin" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="lat3D">Sob.Esp. Lat.3D</label>
-                                            <input type="number" id="lat3D" required>
+                                            <label for="novoLat3D">Sob.Esp. Lat.3D</label>
+                                            <input type="number" id="novoLat3D" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="lat">Sob.Esp. Lat</label>
-                                            <input type="number" id="lat" required>
+                                            <label for="novoLat">Sob.Esp. Lat</label>
+                                            <input type="number" id="novoLat" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="vert">Sob.Esp. Vert.</label>
-                                            <input type="number" id="vert" required>
+                                            <label for="novoVert">Sob.Esp. Vert.</label>
+                                            <input type="number" id="novoVert" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="latStep">Passo: Lat.</label>
-                                            <input type="number" id="latStep" required>
+                                            <label for="novoLatStep">Passo: Lat.</label>
+                                            <input type="number" id="novoLatStep" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="vertStep">Passo: Vert.</label>
-                                            <input type="number" id="vertStep" required>
+                                            <label for="novoVertStep">Passo: Vert.</label>
+                                            <input type="number" id="novoVertStep" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="tolerance">Tol.</label>
-                                            <input type="number" step="0.01" id="tolerance" required>
+                                            <label for="novoTolerance">Tol.</label>
+                                            <input type="number" step="0.01" id="novoTolerance" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="rotation">Rot.</label>
-                                            <input type="number" id="rotation" required>
+                                            <label for="novoRotation">Rot.</label>
+                                            <input type="number" id="novoRotation" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="advance">Av</label>
-                                            <input type="number" id="advance" required>
+                                            <label for="novoAdvance">Av</label>
+                                            <input type="number" id="novoAdvance" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="angle">Ângulo</label>
-                                            <input type="text" id="angle" required>
+                                            <label for="novoAngle">Ângulo</label>
+                                            <input type="text" id="novoAngle" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="workPlane">Plano Trab.</label>
-                                            <input type="text" id="workPlane" required>
+                                            <label for="novoWorkPlane">Plano Trab.</label>
+                                            <input type="text" id="novoWorkPlane" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-section">
                                     <h3>Arquivos do Programa</h3>
                                     <div class="form-group">
-                                        <label for="fresaFile">Fresa:</label>
-                                        <input type="text" id="fresaFile" required>
+                                        <label for="novoFresaFile">Fresa:</label>
+                                        <input type="text" id="novoFresaFile" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="subFile">Sub:</label>
-                                        <input type="text" id="subFile" required>
+                                        <label for="novoSubFile">Sub:</label>
+                                        <input type="text" id="novoSubFile" required>
                                     </div>
                                 </div>
                                 <button type="submit" class="submit-button">Adicionar Programa ao Projeto</button>
@@ -324,13 +321,10 @@
                                     <h3>Importar Programa via Arquivo</h3>
                                     <div class="file-type-selector">
                                         <label>
-                                            <input type="radio" name="fileType" value="excel" checked> Excel (.xlsx, .xls)
-                                        </label>
-                                        <label>
-                                            <input type="radio" name="fileType" value="json"> JSON (.json)
+                                            <input type="radio" name="fileType" value="pdf" checked> PDF (.pdf)
                                         </label>
                                     </div>
-                                    <input type="file" id="fileInput" accept=".xlsx, .xls, .json" required />
+                                    <input type="file" id="fileInput" accept=".pdf" required />
                                     <button type="submit">Pré-visualizar</button>
                                 </div>
                                 <div id="previewContainer"></div>
@@ -345,5 +339,12 @@
     <footer>
         <p>© 2025 Simoldes Aços Brasil. Todos os direitos reservados.</p>
     </footer>
+    <!-- Modal de Alerta Customizado -->
+    <div id="customAlertModal" class="custom-alert-modal" style="display:none;">
+        <div class="custom-alert-content">
+            <span id="customAlertMessage"></span>
+            <button id="customAlertOkBtn">OK</button>
+        </div>
+    </div>
 </body>
 </html>
