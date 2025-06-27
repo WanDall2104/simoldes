@@ -19,21 +19,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const programSignatures = {};
     let signaturePad = null;
     
-    // Obter código do projeto da URL
-    const codigoProjeto = (() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('codigo') || urlParams.get('id');
-    })();
-
-    // Buscar projeto no localStorage
-    let todosProgramas = [];
-    if (codigoProjeto) {
-        const projetos = JSON.parse(localStorage.getItem('projetos')) || {};
-        const projeto = projetos[codigoProjeto];
-        if (projeto && projeto.programas) {
-            todosProgramas = projeto.programas;
-        }
-    }
+    // Dados de exemplo - programas
+    const programas = [
+        { id: 7, nome: 'Programa: 07', status: 'completed', descricao: 'O contramolde foi aparecer aqui' },
+        { id: 8, nome: 'Programa: 08', status: 'pending' },
+        { id: 9, nome: 'Programa: 09', status: 'pending' },
+        { id: 10, nome: 'Programa: 10', status: 'pending' },
+        { id: 11, nome: 'Programa: 11', status: 'pending' },
+        { id: 12, nome: 'Programa: 12', status: 'pending' },
+        { id: 13, nome: 'Programa: 13', status: 'pending' },
+        { id: 14, nome: 'Programa: 14', status: 'pending' },
+        { id: 15, nome: 'Programa: 15', status: 'pending' }
+    ];
     
     // Variáveis para controle de tempo
     let timerInterval = null;
@@ -81,25 +78,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Renderizar lista de programas
     function renderizarProgramas() {
         programItemsContainer.innerHTML = '';
-        todosProgramas.forEach(programa => {
+        
+        programas.forEach(programa => {
             const item = document.createElement('div');
             item.className = `program-item ${programa.status}`;
-            item.dataset.id = programa.id || programa.numero;
+            item.dataset.id = programa.id;
+            
+            // Simplificado para mostrar apenas o nome do programa e status como na imagem
             item.innerHTML = `
-                <div class="program-name">${programa.nome || programa.numero}</div>
+                <div class="program-name">${programa.nome}</div>
                 <div class="program-status ${programa.status === 'completed' ? 'completed' : 'pending'}">
                     ${programa.status === 'completed' ? 'Concluído' : 'Pendente'}
                 </div>
             `;
+            
+            // Adicionar evento de clique para selecionar programa
             item.addEventListener('click', function() {
-                selecionarPrograma(programa.id || programa.numero);
+                selecionarPrograma(programa.id);
             });
+            
             programItemsContainer.appendChild(item);
         });
         
         // Atualizar contadores e barra de progresso
-        const total = todosProgramas.length;
-        const completed = todosProgramas.filter(p => p.status === 'completed').length;
+        const total = programas.length;
+        const completed = programas.filter(p => p.status === 'completed').length;
         const pending = total - completed;
         
         if (completedCount) completedCount.textContent = completed;
@@ -135,9 +138,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Atualizar detalhes do programa selecionado
-        const programa = todosProgramas.find(p => p.id === id || p.numero === id);
+        const programa = programas.find(p => p.id === id);
         if (programa) {
-            document.getElementById('currentProgramNumber').textContent = programa.id || programa.numero;
+            document.getElementById('currentProgramNumber').textContent = programa.id;
             const programStatus = document.getElementById('programStatus');
             if (programStatus) {
                 programStatus.textContent = programa.status === 'completed' ? 'Concluído' : 'Pendente';
@@ -160,10 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 pausarBtn.disabled = true;
                 concluirBtn.disabled = true;
             }
-            
-            // Atualizar campos do programa
-            const projetoAtual = JSON.parse(localStorage.getItem('projetos'))[codigoProjeto];
-            preencherCamposPrograma(programa, projetoAtual);
         }
         
         // Atualizar número do programa na área de assinatura
@@ -218,12 +217,26 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Verificar se há assinatura para este programa
             if (!programSignatures[id]) {
-                showStyledConfirm('Este programa não possui assinatura. Deseja continuar mesmo assim?', () => {
-                    concluirProcessoInterno(id);
-                }, () => {});
-                return;
+                if (!confirm('Este programa não possui assinatura. Deseja continuar mesmo assim?')) {
+                    return;
+                }
             }
-            concluirProcessoInterno(id);
+            
+            const index = programas.findIndex(p => p.id === id);
+            
+            if (index !== -1) {
+                programas[index].status = 'completed';
+                renderizarProgramas();
+                
+                // Selecionar o próximo programa pendente
+                const proximoPendente = programas.find(p => p.status === 'pending');
+                if (proximoPendente) {
+                    selecionarPrograma(proximoPendente.id);
+                }
+                
+                // Mostrar feedback visual
+                mostrarNotificacao('Programa concluído com sucesso!');
+            }
         }
         
         // Resetar timer
@@ -233,24 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
         iniciarBtn.disabled = false;
         pausarBtn.disabled = true;
         concluirBtn.disabled = true;
-    }
-    
-    // Função interna para concluir processo
-    function concluirProcessoInterno(id) {
-        const index = todosProgramas.findIndex(p => p.id === id || p.numero === id);
-        if (index !== -1) {
-            todosProgramas[index].status = 'completed';
-            renderizarProgramas();
-            
-            // Selecionar o próximo programa pendente
-            const proximoPendente = todosProgramas.find(p => p.status === 'pending');
-            if (proximoPendente) {
-                selecionarPrograma(proximoPendente.id || proximoPendente.numero);
-            }
-            
-            // Mostrar feedback visual
-            mostrarNotificacao('Programa concluído com sucesso!');
-        }
     }
     
     // Função para mostrar notificação
@@ -297,14 +292,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Eventos de navegação
     if (voltarBtn) {
         voltarBtn.addEventListener('click', function() {
-            let destino = 'folhaprocesso.html';
-            if (codigoProjeto) destino += '?codigo=' + codigoProjeto;
+            const codigoProjeto = getQueryParam('codigo');
             if (timerAtivo) {
-                showStyledConfirm('Há um timer em andamento. Deseja realmente sair desta página?', () => {
-                    window.location.href = destino;
-                }, () => {});
+                if (confirm('Há um timer em andamento. Deseja realmente sair desta página?')) {
+                    window.location.href = 'folhaprocesso.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
+                }
             } else {
-                window.location.href = destino;
+                window.location.href = 'folhaprocesso.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
             }
         });
     }
@@ -312,9 +306,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (voltarInicioBtn) {
         voltarInicioBtn.addEventListener('click', function() {
             if (timerAtivo) {
-                showStyledConfirm('Há um timer em andamento. Deseja realmente sair desta página?', () => {
+                if (confirm('Há um timer em andamento. Deseja realmente sair desta página?')) {
                     window.location.href = 'index.html';
-                }, () => {});
+                }
             } else {
                 window.location.href = 'index.html';
             }
@@ -325,19 +319,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (finalizarCheckbox) {
         finalizarCheckbox.addEventListener('change', function() {
             if (this.checked) {
-                const todosConcluidos = todosProgramas.every(p => p.status === 'completed');
+                const todosConcluidos = programas.every(p => p.status === 'completed');
                 
                 if (!todosConcluidos) {
-                    showStyledAlert('Todos os programas devem ser concluídos antes de finalizar o projeto.');
+                    alert('Todos os programas devem ser concluídos antes de finalizar o projeto.');
                     this.checked = false;
                 } else {
-                    showStyledConfirm('Tem certeza que deseja finalizar este projeto?', () => {
+                    if (confirm('Tem certeza que deseja finalizar este projeto?')) {
                         // Aqui você pode adicionar código para salvar o projeto como finalizado
                         mostrarNotificacao('Projeto finalizado com sucesso!');
                         setTimeout(() => {
                             window.location.href = 'projetos.html';
                         }, 1500);
-                    }, () => { finalizarCheckbox.checked = false; });
+                    } else {
+                        this.checked = false;
+                    }
                 }
             }
         });
@@ -347,12 +343,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const verAmplaBtn = document.getElementById('verAmplaBtn');
     if (verAmplaBtn) {
         verAmplaBtn.addEventListener('click', function() {
+            const codigoProjeto = getQueryParam('codigo');
             if (timerAtivo) {
-                showStyledConfirm('Há um timer em andamento. Deseja realmente sair desta página?', () => {
-                    window.location.href = 'folhaprocesso-ampla.html?codigo=' + codigoProjeto;
-                }, () => {});
+                if (confirm('Há um timer em andamento. Deseja realmente sair desta página?')) {
+                    window.location.href = 'folhaprocesso-ampla.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
+                }
             } else {
-                window.location.href = 'folhaprocesso-ampla.html?codigo=' + codigoProjeto;
+                window.location.href = 'folhaprocesso-ampla.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
             }
         });
     }
@@ -361,8 +358,8 @@ document.addEventListener('DOMContentLoaded', function() {
     renderizarProgramas();
     
     // Selecionar o primeiro programa por padrão
-    if (todosProgramas.length > 0) {
-        selecionarPrograma(todosProgramas[0].id || todosProgramas[0].numero);
+    if (programas.length > 0) {
+        selecionarPrograma(programas[0].id);
     }
     
     // Adicionar listener para redimensionamento da janela
@@ -384,87 +381,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
-    // Integração localStorage para folha de programação detalhada
-    function getQueryParam(...names) {
-        const urlParams = new URLSearchParams(window.location.search);
-        for (const name of names) {
-            const val = urlParams.get(name);
-            if (val) return val;
-        }
-        return null;
-    }
-    function showStyledAlert(msg) {
-        const old = document.getElementById('customFolhaAlert');
-        if (old) old.remove();
-        const div = document.createElement('div');
-        div.id = 'customFolhaAlert';
-        div.style.position = 'fixed';
-        div.style.top = '0';
-        div.style.left = '0';
-        div.style.width = '100vw';
-        div.style.height = '100vh';
-        div.style.background = 'rgba(0,0,0,0.25)';
-        div.style.display = 'flex';
-        div.style.alignItems = 'center';
-        div.style.justifyContent = 'center';
-        div.style.zIndex = '9999';
-        div.innerHTML = `<div style=\"background:#fff;padding:32px 28px 24px 28px;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:350px;text-align:center;\"><div style='font-size:18px;font-weight:600;margin-bottom:16px;'>Atenção</div><div style='font-size:15px;margin-bottom:24px;'>${msg}</div><button style='background:#0f5132;color:#fff;padding:8px 22px;border:none;border-radius:5px;font-weight:600;cursor:pointer;' onclick='document.getElementById("customFolhaAlert").remove()'>OK</button></div>`;
-        document.body.appendChild(div);
-    }
-    function showStyledConfirm(msg, onConfirm, onCancel) {
-        const old = document.getElementById('customFolhaConfirm');
-        if (old) old.remove();
-        const div = document.createElement('div');
-        div.id = 'customFolhaConfirm';
-        div.style.position = 'fixed';
-        div.style.top = '0';
-        div.style.left = '0';
-        div.style.width = '100vw';
-        div.style.height = '100vh';
-        div.style.background = 'rgba(0,0,0,0.25)';
-        div.style.display = 'flex';
-        div.style.alignItems = 'center';
-        div.style.justifyContent = 'center';
-        div.style.zIndex = '9999';
-        div.innerHTML = `<div style=\"background:#fff;padding:32px 28px 24px 28px;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:350px;text-align:center;\"><div style='font-size:18px;font-weight:600;margin-bottom:16px;'>Atenção</div><div style='font-size:15px;margin-bottom:24px;'>${msg}</div><button id='confirmBtn' style='background:#0f5132;color:#fff;padding:8px 22px;border:none;border-radius:5px;font-weight:600;cursor:pointer;margin-right:10px;'>Confirmar</button><button id='cancelBtn' style='background:#b02a37;color:#fff;padding:8px 22px;border:none;border-radius:5px;font-weight:600;cursor:pointer;'>Cancelar</button></div>`;
-        document.body.appendChild(div);
-        document.getElementById('confirmBtn').onclick = () => {
-            div.remove();
-            if (onConfirm) onConfirm();
-        };
-        document.getElementById('cancelBtn').onclick = () => {
-            div.remove();
-            if (onCancel) onCancel();
-        };
-    }
-    function preencherFolhaDetalhadaComProjeto(projeto) {
-        if (!projeto || !projeto.programas || projeto.programas.length === 0) return;
-        const programa = projeto.programas[0]; // Exibe o primeiro programa
-        // Exemplo: preencher campos pelo id ou classe
-        if (document.getElementById('currentProgramNumber')) document.getElementById('currentProgramNumber').textContent = programa.numero || '';
-        if (document.getElementById('programStatus')) {
-            document.getElementById('programStatus').textContent = programa.status === 'completed' ? 'Concluído' : (programa.status === 'in_progress' ? 'Em Andamento' : 'Pendente');
-            document.getElementById('programStatus').className = `program-status ${programa.status}`;
-        }
-        // Preencher outros campos detalhados conforme o layout do HTML...
-        if (document.getElementById('progPercursoDetalhe')) document.getElementById('progPercursoDetalhe').textContent = programa.percurso || '';
-        if (document.getElementById('progReferenciaDetalhe')) document.getElementById('progReferenciaDetalhe').textContent = programa.referencia || '';
-        if (document.getElementById('progComentarioDetalhe')) document.getElementById('progComentarioDetalhe').textContent = programa.comentario || '';
-        // ... (repita para os demais campos que existirem no HTML)
-    }
-    function carregarFolhaDetalhada() {
-        const codigoProjeto = getQueryParam('codigo', 'id');
-        if (!codigoProjeto) {
-            showStyledAlert('Projeto não encontrado: parâmetro ausente na URL.');
-            return;
-        }
-        const projetos = JSON.parse(localStorage.getItem('projetos')) || {};
-        const projeto = projetos[codigoProjeto];
-        if (projeto) preencherFolhaDetalhadaComProjeto(projeto);
-        else showStyledAlert('Projeto não encontrado no sistema.');
-    }
-    document.addEventListener('DOMContentLoaded', carregarFolhaDetalhada);
 });
 
 // Funções para gerenciar assinaturas
@@ -484,111 +400,27 @@ function salvarAssinatura() {
             programSignatures[id] = signaturePad.toDataURL();
             
             // Verificar se o programa já está marcado como concluído
-            const index = todosProgramas.findIndex(p => p.id === id || p.numero === id);
-            if (index !== -1 && todosProgramas[index].status !== 'completed') {
+            const index = programas.findIndex(p => p.id === id);
+            if (index !== -1 && programas[index].status !== 'completed') {
                 // Perguntar se deseja concluir o programa
-                showStyledConfirm('Deseja marcar este programa como concluído?', () => {
+                if (confirm('Deseja marcar este programa como concluído?')) {
                     concluirProcesso();
-                }, () => { mostrarNotificacao('Assinatura salva com sucesso!'); });
+                } else {
+                    mostrarNotificacao('Assinatura salva com sucesso!');
+                }
             } else {
                 mostrarNotificacao('Assinatura salva com sucesso!');
             }
         }
     } else {
-        showStyledAlert('Por favor, forneça uma assinatura antes de salvar.');
+        alert('Por favor, forneça uma assinatura antes de salvar.');
     }
 }
 
-// Função para mostrar notificação
-function mostrarNotificacao(mensagem, tipo = 'success') {
-    // Verificar se já existe uma notificação
-    let notificacao = document.querySelector('.notificacao');
-    if (notificacao) {
-        notificacao.remove();
-    }
-    
-    // Criar nova notificação
-    notificacao = document.createElement('div');
-    notificacao.className = `notificacao ${tipo}`;
-    notificacao.textContent = mensagem;
-    
-    // Adicionar ao corpo do documento
-    document.body.appendChild(notificacao);
-    
-    // Remover após 3 segundos
-    setTimeout(() => {
-        notificacao.classList.add('fadeOut');
-        setTimeout(() => {
-            notificacao.remove();
-        }, 500);
-    }, 3000);
-}
-
-function preencherCamposPrograma(programa, projeto) {
-    if (!programa || !projeto) return;
-    // Dados principais do projeto
-    if (document.getElementById('materialValue')) document.getElementById('materialValue').textContent = projeto.folhaProcesso?.material || projeto.title || '';
-    if (document.getElementById('programPath')) document.getElementById('programPath').textContent = projeto.folhaProcesso?.pastaProgramas || projeto.machine || '';
-    if (document.getElementById('programmerName')) document.getElementById('programmerName').textContent = projeto.folhaProcesso?.programador || '';
-    if (document.getElementById('estimatedTime')) document.getElementById('estimatedTime').textContent = projeto.folhaProcesso?.tempoProjeto || '';
-    // Dados do programa selecionado
-    if (document.getElementById('currentProgramNumber')) document.getElementById('currentProgramNumber').textContent = programa.numero || programa.id || '';
-    if (document.getElementById('programStatus')) {
-        document.getElementById('programStatus').textContent = programa.status === 'completed' ? 'Concluído' : (programa.status === 'in_progress' ? 'Em Andamento' : 'Pendente');
-        document.getElementById('programStatus').className = `program-status ${programa.status}`;
-    }
-    // Comentários, percurso, referência
-    const descText = document.querySelector('.description-text strong');
-    if (descText && programa.comentario) descText.nextSibling.textContent = ` ${programa.comentario}`;
-    const descExtra = document.querySelector('.description-extra strong');
-    if (descExtra && programa.percurso) descExtra.nextSibling.textContent = ` ${programa.percurso}`;
-    const descRef = document.querySelector('.description-ref strong');
-    if (descRef && programa.referencia) descRef.nextSibling.textContent = ` ${programa.referencia}`;
-    // Ferramentas
-    const ferramentas = [
-        { id: 0, key: 'ferramentaO' },
-        { id: 1, key: 'ferramentaRC' },
-        { id: 2, key: 'ferramentaRib' },
-        { id: 3, key: 'ferramentaAlt' },
-        { id: 4, key: 'zMin' },
-        { id: 5, key: 'lat2D' },
-        { id: 6, key: 'latVert' },
-        { id: 7, key: 'lat' },
-        { id: 8, key: 'vert' },
-        { id: 9, key: 'tol' },
-        { id: 10, key: 'rot' },
-        { id: 11, key: 'avAngular' },
-        { id: 12, key: 'tempoTrab' },
-        { id: 13, key: 'corte' },
-        { id: 14, key: 'total' },
-        { id: 15, key: 'posicao' }
-    ];
-    const toolColumns = document.querySelectorAll('.tools-grid .tool-column .tool-value');
-    if (toolColumns.length) {
-        toolColumns[0].textContent = programa.ferramentaO || '';
-        toolColumns[1].textContent = programa.ferramentaRC || '';
-        toolColumns[2].textContent = programa.ferramentaRib || '';
-        toolColumns[3].textContent = programa.ferramentaAlt || '';
-        toolColumns[4].textContent = programa.zMin || '';
-        toolColumns[5].textContent = programa.lat2D || '';
-        toolColumns[6].textContent = programa.latVert || '';
-        toolColumns[7].textContent = programa.lat || '';
-        toolColumns[8].textContent = programa.vert || '';
-        toolColumns[9].textContent = programa.tol || '';
-        toolColumns[10].textContent = programa.rot || '';
-        toolColumns[11].textContent = programa.avAngular || '';
-        toolColumns[12].textContent = programa.tempoTrab || '';
-        toolColumns[13].textContent = programa.corte || '';
-        toolColumns[14].textContent = programa.total || '';
-        toolColumns[15].textContent = programa.posicao || '';
-    }
-    // Arquivos
-    const fileRows = document.querySelectorAll('.file-section .file-row .file-value');
-    const sup = programa.sup || (programa.arquivos && programa.arquivos.sup) || '';
-    if (fileRows[0]) fileRows[0].textContent = sup;
-    // Tempos
-    if (document.getElementById('tempoCortado')) document.getElementById('tempoCortado').value = programa.tempoTrab || '';
-    if (document.getElementById('tempoTotal')) document.getElementById('tempoTotal').value = programa.total || '';
+// Função para obter parâmetro da URL
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
 }
 
 

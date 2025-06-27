@@ -37,9 +37,8 @@
                     <span class="info-value" id="estimatedTime">03:45:00</span>
                 </div>
             </div>
-            <div class="piece-image" style="text-align:center; margin-top: 10px;">
-                <img src="images/image-molde01.png" alt="Imagem da Peça" id="pieceImage" style="max-width:180px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-radius:8px;">
-                <div style="font-size:14px;color:#444;margin-top:6px;">Clique na imagem para visualizar a peça em 3D</div>
+            <div class="piece-image">
+                <img src="images/image-molde01.png" alt="Imagem da Peça" id="pieceImage">
             </div>
         </div>
         
@@ -244,14 +243,14 @@
     </div>
     
     <!-- Modal para visualização 3D -->
-    <div id="modal3D" class="modal" style="display:none;">
+    <div id="modal3D" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">Visualização 3D da Peça</h2>
                 <span class="close-modal" id="close3DModal">&times;</span>
             </div>
             <div class="modal-body">
-                <div id="container3D" style="width:100%;min-width:300px;height:400px;min-height:300px;background:#f0f0f0;"></div>
+                <div id="container3D"></div>
                 <div class="zoom-controls">
                     <button id="zoomIn" class="zoom-btn" title="Ampliar">
                         <i class="fas fa-plus"></i>
@@ -273,10 +272,3 @@
     <script src="scripts/3d-viewer.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-

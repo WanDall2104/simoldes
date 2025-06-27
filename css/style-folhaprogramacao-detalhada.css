@@ -342,7 +342,6 @@ body {
     border: none;
     min-width: 140px;
     text-align: center;
-    font-family: 'Poppins', sans-serif;
 }
 
 .time-button:hover:not(:disabled) {
@@ -557,7 +556,6 @@ body {
     background-color: #f0f0f0;
     border: none;
     border-radius: 4px;
-    font-family: 'Poppins', sans-serif;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1585,7 +1583,6 @@ input:focus, button:focus {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-family: 'Poppins', sans-serif;
     font-weight: 500;
     font-size: 14px;
     transition: all 0.2s ease;
@@ -2143,10 +2140,6 @@ input:focus, button:focus {
     .signature-buttons {
         flex-direction: column;
     }
-    
-    .signature-btn, .nav-button {
-        width: 100%;
-    }
 }
 
 /* Melhorias para o estado ativo do programa */
@@ -2466,6 +2459,8 @@ input:focus, button:focus {
     gap: 8px;
     padding: 10px 16px;
     border-radius: 4px;
+    font-weight: 500;
+    font-size: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
@@ -2492,103 +2487,227 @@ input:focus, button:focus {
     background-color: #0a3e26;
 }
 
-/* Estilo para o modal 3D centralizado e com fundo escurecido */
-#modal3D.modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0; top: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.5);
+/* Estilo específico para botões de assinatura */
+.signature-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.signature-btn {
+    flex: 1;
+    padding: 10px 20px;
+}
+
+.signature-btn:not(.primary) {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Estilo para botões de navegação no rodapé */
+.navigation-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Responsividade para os botões */
+@media (max-width: 768px) {
+    .signature-buttons, .navigation-buttons {
+        flex-direction: column;
+    }
+    
+    .signature-btn, .nav-button {
+        width: 100%;
+    }
+}
+
+/* Estilo para ícones nos botões */
+.nav-button i, .signature-btn i {
+    font-size: 14px;
+}
+
+/* Ajuste para o botão Ver Folha Ampla */
+.nav-button.primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+}
+
+/* Garantir que todos os botões usem a fonte Poppins */
+.time-button, .nav-button, .signature-btn {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+/* Estilo para os botões de tempo (Iniciar, Pausar, Concluir Processo) */
+.time-button {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    min-width: 140px;
+    text-align: center;
+}
+
+.time-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.time-button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.time-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Estilo unificado para botões de navegação e assinatura */
+.nav-button, .signature-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+}
+
+/* Estilos para o modal 3D */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
     overflow: auto;
 }
-#modal3D .modal-content {
-    background: #fff;
-    border-radius: 10px;
-    max-width: 700px;
-    margin: 40px auto;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    padding: 0 0 24px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-#modal3D .modal-header {
-    width: 91%;
-    background: #17643a;
-    color: #fff;
-    border-radius: 10px 10px 0 0;
-    padding: 25px 32px 12px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-#modal3D .modal-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0;
-}
-#modal3D .close-modal {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #fff;
-    cursor: pointer;
-    margin-left: 16px;
-    transition: color 0.2s;
-}
-#modal3D .close-modal:hover {
-    color: #b02a37;
-}
-#modal3D .modal-body {
-    width: 100%;
-    padding: 24px 24px 0 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-#container3D {
-    width: 100%;
-    min-width: 300px;
-    max-width: 600px;
-    height: 400px;
-    min-height: 300px;
-    background: #f0f0f0;
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 0;
     border-radius: 8px;
-    margin-bottom: 18px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 900px;
+    animation: modalFadeIn 0.3s;
 }
-.zoom-controls {
+
+.modal-header {
     display: flex;
-    gap: 8px;
-    margin-top: 8px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: var(--primary, #0f5132);
+    color: white;
+    border-radius: 8px 8px 0 0;
 }
-.zoom-btn {
-    background: #17643a;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 12px;
-    font-size: 1.1rem;
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-modal {
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
-    transition: background 0.2s;
+    color: white;
 }
+
+.modal-body {
+    padding: 20px;
+}
+
+#container3D {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+@keyframes modalFadeIn {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* Estilos para os controles de zoom */
+.zoom-controls {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+}
+
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary, #0f5132);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
 .zoom-btn:hover {
-    background: #218c5a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background-color: #0a3e26;
 }
-@media (max-width: 800px) {
-    #modal3D .modal-content {
-        max-width: 98vw;
-        padding: 0 0 16px 0;
+
+.zoom-btn:active {
+    transform: translateY(0);
+}
+
+.zoom-btn i {
+    font-size: 16px;
+}
+
+/* Ajuste para o container 3D para posicionamento relativo */
+#container3D {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+    .zoom-controls {
+        bottom: 20px;
+        right: 20px;
     }
-    #container3D {
-        max-width: 95vw;
-        height: 250px;
-        min-height: 180px;
-    }
-    #modal3D .modal-header {
-        padding: 12px 12px 8px 12px;
+    
+    .zoom-btn {
+        width: 36px;
+        height: 36px;
     }
 }
 
