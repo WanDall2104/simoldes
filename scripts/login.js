@@ -84,10 +84,11 @@ function mostrarMensagem(tipo, texto) {
 async function fazerLogin(event) {
     event.preventDefault();
     
+    const maquina = document.getElementById('maquina').value;
     const matricula = document.getElementById('matricula').value;
     const senha = document.getElementById('senha').value;
     
-    if (!matricula || !senha) {
+    if (!maquina || !matricula || !senha) {
         mostrarMensagem('error', 'Por favor, preencha todos os campos!');
         return;
     }
@@ -106,6 +107,7 @@ async function fazerLogin(event) {
             localStorage.setItem('currentUser', resultado.usuario.nome);
             localStorage.setItem('userRole', resultado.usuario.tipoUsuario || resultado.usuario.nivelAcesso);
             localStorage.setItem('userMatricula', resultado.usuario.matricula);
+            localStorage.setItem('userMaquina', maquina);
             mostrarMensagem('success', `Bem-vindo(a), ${resultado.usuario.nome}!`);
             setTimeout(() => {
                 window.location.href = 'index.html';

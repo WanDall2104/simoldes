@@ -110,34 +110,15 @@ const nextPageBtn = document.querySelector('.pagination-btn:last-child');
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar nível de acesso do usuário
-    const userRole = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('currentUser');
-    
     // Verificar se o usuário está logado
     if (!userName) {
         window.location.href = 'login-page.html';
         return;
     }
-    
-    // Filtrar projetos baseado no nível de acesso
-    if (userRole === 'administrador' || userRole === 'admin') {
-        // Administradores veem todos os projetos
-        filteredProjects = [...projectsData];
-    } else if (userRole === 'operador') {
-        // Operadores só veem seus próprios projetos
-        filteredProjects = projectsData.filter(project => 
-            project.operator === userName
-        );
-    } else {
-        // Outros usuários são redirecionados
-        alert('Você não tem permissão para acessar esta página');
-        window.location.href = 'index.html';
-        return;
-    }
-    
-    // Carregar projetos iniciais
-    renderProjects();
+    // Carregar todos os projetos, sem filtro por operador
+    filteredProjects = [...projectsData];
+    // Carregar projetos iniciais já filtrando por máquina
+    applyFilters();
     
     // Configurar eventos
     searchBtn.addEventListener('click', applyFilters);
@@ -167,28 +148,31 @@ function applyFilters() {
     const searchTerm = searchInput.value.toLowerCase();
     const statusValue = statusFilter.value;
     const dateValue = dateFilter.value;
-    const userRole = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('currentUser');
-    
-    // Filtrar por termo de busca e nível de acesso
+    const maquinaSelecionada = localStorage.getItem('userMaquina');
+
+    const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+
     filteredProjects = projectsData.filter(project => {
-        // Verificar se o usuário tem acesso a este projeto
-        const hasAccess = userRole === 'admin' || (userRole === 'operador' && project.operator === userName);
-        
-        if (!hasAccess) return false;
-        
+        // Filtro por máquina (obrigatório)
+        if (maquinaSelecionada && ['01','02','03'].includes(maquinaSelecionada)) {
+            if (project.machine.trim().toUpperCase() !== mapMaquina[maquinaSelecionada].toUpperCase()) {
+                return false;
+            }
+        }
+
+        // Filtro de busca
         const matchesSearch = 
             project.title.toLowerCase().includes(searchTerm) ||
             project.code.toLowerCase().includes(searchTerm) ||
             project.operator.toLowerCase().includes(searchTerm) ||
             project.machine.toLowerCase().includes(searchTerm);
-        
-        // Filtrar por status
+
+        // Filtro de status
         const matchesStatus = 
             statusValue === 'all' || 
             project.status === statusValue;
-        
-        // Filtrar por data
+
+        // Filtro de data
         let matchesDate = true;
         if (dateValue !== 'all') {
             const today = new Date();
@@ -204,7 +188,7 @@ function applyFilters() {
                 matchesDate = isThisYear(projectDate, today);
             }
         }
-        
+
         return matchesSearch && matchesStatus && matchesDate;
     });
     
