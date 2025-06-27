@@ -64,7 +64,14 @@ document.addEventListener('DOMContentLoaded', function() {
         container3D.appendChild(renderer.domElement);
         
         // Adicionar controles de órbita
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        if (typeof OrbitControls !== 'undefined') {
+            controls = new OrbitControls(camera, renderer.domElement);
+        } else if (typeof THREE.OrbitControls !== 'undefined') {
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+        } else {
+            alert('OrbitControls não foi carregado corretamente. A visualização 3D não funcionará.');
+            return;
+        }
         controls.enableDamping = true;
         controls.dampingFactor = 0.25;
         controls.screenSpacePanning = false;

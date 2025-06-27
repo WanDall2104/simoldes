@@ -49,138 +49,177 @@
                         <button class="tab-button active" data-tab="manual">Entrada Manual</button>
                         <button class="tab-button" data-tab="arquivo">Importar via Arquivo</button>
                         <button class="tab-button" data-tab="programas">Inserir novos Programas</button>
+                        <button class="tab-button" id="tabFolhaDetalhesBtn" data-tab="folhaDetalhes" style="display:none;">Detalhes da Folha</button>
                     </div>
                     
                     <div class="tab-content">
                         <!-- Aba de Entrada Manual -->
                         <div id="manual" class="tab-pane active">
-                            <form id="manualForm" class="manual-form">
+                            <form id="formProjetoCompleto" class="manual-form">
                                 <div class="form-section">
-                                    <h3>Informações Básicas</h3>
+                                    <h3>Informações Básicas do Projeto</h3>
                                     <div class="form-group">
-                                        <label for="materialValue">Material:</label>
+                                        <label for="materialValue">Nome do Projeto:</label>
                                         <input type="text" id="materialValue" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="programPath">Pasta do Programa:</label>
-                                        <input type="text" id="programPath" required>
+                                        <label for="programNumber">Código do Projeto:</label>
+                                        <input type="text" id="programNumber" required readonly>
                                     </div>
                                     <div class="form-group">
-                                        <label for="programmerName">Nome do Programador:</label>
-                                        <input type="text" id="programmerName" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="estimatedTime">Tempo Previsto:</label>
-                                        <input type="time" id="estimatedTime" required>
+                                        <label for="machineValue">Máquina:</label>
+                                        <input type="text" id="machineValue" disabled placeholder="Selecionada automaticamente">
                                     </div>
                                 </div>
-
                                 <div class="form-section">
-                                    <h3>Detalhes do Programa</h3>
+                                    <h3>Folha de Processo</h3>
                                     <div class="form-group">
-                                        <label for="programNumber">Número do Programa:</label>
-                                        <input type="text" id="programNumber" required>
+                                        <label for="folhaMaterial">Material:</label>
+                                        <input type="text" id="folhaMaterial" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="programStatus">Status:</label>
-                                        <select id="programStatus" required>
+                                        <label for="folhaPastaProgramas">Pasta dos Programas:</label>
+                                        <input type="text" id="folhaPastaProgramas" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaPastaPowerMill">Pasta do Projeto PowerMill:</label>
+                                        <input type="text" id="folhaPastaPowerMill" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaProgramador">Programador:</label>
+                                        <input type="text" id="folhaProgramador" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaTempoProjeto">Tempo Projeto:</label>
+                                        <input type="text" id="folhaTempoProjeto" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaSobLiq">Sob Liq:</label>
+                                        <select id="folhaSobLiq" required>
+                                            <option value="Sim">Sim</option>
+                                            <option value="Não">Não</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaCentroBloco">Centro do Bloco:</label>
+                                        <input type="text" id="folhaCentroBloco" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaRefZ">Ref em Z:</label>
+                                        <input type="text" id="folhaRefZ" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaObservacao">Observação:</label>
+                                        <input type="text" id="folhaObservacao">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaImagem">Imagem (URL ou nome do arquivo):</label>
+                                        <input type="text" id="folhaImagem">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="folhaData">Data de Impressão:</label>
+                                        <input type="date" id="folhaData" required>
+                                    </div>
+                                </div>
+                                <div class="form-section">
+                                    <h3>Folha de Programação Detalhada (Primeiro Programa)</h3>
+                                    <div class="form-group">
+                                        <label for="progNumero">Número do Programa:</label>
+                                        <input type="text" id="progNumero" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progPercurso">Percurso:</label>
+                                        <input type="text" id="progPercurso" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progReferencia">Referência:</label>
+                                        <input type="text" id="progReferencia" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progComentario">Comentário:</label>
+                                        <input type="text" id="progComentario">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progFerramentaO">Ferramenta Ø:</label>
+                                        <input type="text" id="progFerramentaO">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progFerramentaRC">Ferramenta RC:</label>
+                                        <input type="text" id="progFerramentaRC">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progFerramentaRib">Ferramenta Rib.:</label>
+                                        <input type="text" id="progFerramentaRib">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progFerramentaAlt">Ferramenta Alt.:</label>
+                                        <input type="text" id="progFerramentaAlt">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progZMin">Z min:</label>
+                                        <input type="text" id="progZMin">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progLat2D">Lat.2D:</label>
+                                        <input type="text" id="progLat2D">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progLatVert">Lat. Vert.:</label>
+                                        <input type="text" id="progLatVert">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progLat">Lat.:</label>
+                                        <input type="text" id="progLat">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progVert">Vert.:</label>
+                                        <input type="text" id="progVert">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progTol">Tol.:</label>
+                                        <input type="text" id="progTol">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progRot">Rot.:</label>
+                                        <input type="text" id="progRot">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progAvAngular">Av. Angular:</label>
+                                        <input type="text" id="progAvAngular">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progTempoTrab">Tempo Trab.:</label>
+                                        <input type="text" id="progTempoTrab">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progCorte">Corte:</label>
+                                        <input type="text" id="progCorte">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progTotal">Total:</label>
+                                        <input type="text" id="progTotal">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progPosicao">Posição:</label>
+                                        <input type="text" id="progPosicao">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progFresa">Fresa:</label>
+                                        <input type="text" id="progFresa">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progSup">Sup.:</label>
+                                        <input type="text" id="progSup">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="progStatus">Status do Programa:</label>
+                                        <select id="progStatus">
                                             <option value="pending">Pendente</option>
                                             <option value="in_progress">Em Andamento</option>
                                             <option value="completed">Concluído</option>
                                         </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="programmerComments">Comentários do Programador:</label>
-                                        <textarea id="programmerComments" required></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="pathType">Tipo de Percurso:</label>
-                                        <input type="text" id="pathType" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="reference">Referência:</label>
-                                        <input type="text" id="reference" required>
-                                    </div>
                                 </div>
-
-                                <div class="form-section">
-                                    <h3>Ferramentas</h3>
-                                    <div class="tools-grid">
-                                        <div class="form-group">
-                                            <label for="toolDiameter">Ferramenta: Ø</label>
-                                            <input type="number" id="toolDiameter" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="toolRC">Ferramenta: RC</label>
-                                            <input type="number" id="toolRC" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="toolBib">Ferramenta: Bib.</label>
-                                            <input type="number" id="toolBib" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="toolAlt">Ferramenta: Alt.</label>
-                                            <input type="number" id="toolAlt" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="zMin">Z Min.</label>
-                                            <input type="number" id="zMin" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="lat3D">Sob.Esp. Lat.3D</label>
-                                            <input type="number" id="lat3D" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="lat">Sob.Esp. Lat</label>
-                                            <input type="number" id="lat" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="vert">Sob.Esp. Vert.</label>
-                                            <input type="number" id="vert" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="latStep">Passo: Lat.</label>
-                                            <input type="number" id="latStep" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="vertStep">Passo: Vert.</label>
-                                            <input type="number" id="vertStep" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="tolerance">Tol.</label>
-                                            <input type="number" step="0.01" id="tolerance" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="rotation">Rot.</label>
-                                            <input type="number" id="rotation" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="advance">Av</label>
-                                            <input type="number" id="advance" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="angle">Ângulo</label>
-                                            <input type="text" id="angle" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="workPlane">Plano Trab.</label>
-                                            <input type="text" id="workPlane" required>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-section">
-                                    <h3>Arquivos do Programa</h3>
-                                    <div class="form-group">
-                                        <label for="fresaFile">Fresa:</label>
-                                        <input type="text" id="fresaFile" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="subFile">Sub:</label>
-                                        <input type="text" id="subFile" required>
-                                    </div>
-                                </div>
-
                                 <button type="submit" class="submit-button">Salvar Projeto</button>
                             </form>
                         </div>

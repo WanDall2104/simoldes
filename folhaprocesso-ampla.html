@@ -161,5 +161,93 @@
     </div>
     
     <script src="scripts/folhaprocessos-ampla.js"></script>
+    <script>
+    (function() {
+        function getQueryParam(...names) {
+            const urlParams = new URLSearchParams(window.location.search);
+            for (const name of names) {
+                const val = urlParams.get(name);
+                if (val) return val;
+            }
+            return null;
+        }
+        function showStyledAlert(msg) {
+            const old = document.getElementById('customFolhaAlert');
+            if (old) old.remove();
+            const div = document.createElement('div');
+            div.id = 'customFolhaAlert';
+            div.style.position = 'fixed';
+            div.style.top = '0';
+            div.style.left = '0';
+            div.style.width = '100vw';
+            div.style.height = '100vh';
+            div.style.background = 'rgba(0,0,0,0.25)';
+            div.style.display = 'flex';
+            div.style.alignItems = 'center';
+            div.style.justifyContent = 'center';
+            div.style.zIndex = '9999';
+            div.innerHTML = `<div style="background:#fff;padding:32px 28px 24px 28px;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:350px;text-align:center;"><div style='font-size:18px;font-weight:600;margin-bottom:16px;'>Atenção</div><div style='font-size:15px;margin-bottom:24px;'>${msg}</div><button style='background:#0f5132;color:#fff;padding:8px 22px;border:none;border-radius:5px;font-weight:600;cursor:pointer;' onclick='document.getElementById("customFolhaAlert").remove()'>OK</button></div>`;
+            document.body.appendChild(div);
+        }
+        function preencherFolhaComProjeto(projeto) {
+            if (!projeto || !projeto.folhaProcesso) return;
+            const folha = projeto.folhaProcesso;
+            // Material
+            const materialEl = document.querySelector('.material-info .info-value, .material-info .span-info-material');
+            if (materialEl) materialEl.textContent = folha.material || '';
+            // Pasta dos Programas
+            const pastaProgEl = document.querySelector('.project-info .info-row:nth-child(1) .info-value');
+            if (pastaProgEl) pastaProgEl.textContent = folha.pastaProgramas || '';
+            // Pasta PowerMill
+            const pastaPMEl = document.querySelector('.project-info .info-row:nth-child(2) .info-value');
+            if (pastaPMEl) pastaPMEl.textContent = folha.pastaPowerMill || '';
+            // Programador
+            const progEl = document.querySelector('.project-info .info-row:nth-child(3) .info-value');
+            if (progEl) progEl.textContent = folha.programador || '';
+            // Tempo Projeto
+            const tempoEl = document.querySelector('.project-info .info-row:nth-child(4) .info-value');
+            if (tempoEl) tempoEl.textContent = folha.tempoProjeto || '';
+            // Sob Liq
+            const sobLiqEl = document.querySelector('.project-info .info-row:nth-child(4) .info-value:last-child');
+            if (sobLiqEl) sobLiqEl.textContent = folha.sobLiq || '';
+            // Imagem
+            const imgEl = document.querySelector('.piece-image img');
+            if (imgEl) imgEl.src = folha.imagem || projeto.image || 'images/image-molde01.png';
+            // Observação, Centro do Bloco, Ref em Z, etc podem ser adicionados conforme necessário
+        }
+        function carregarFolha() {
+            const codigoProjeto = getQueryParam('codigo', 'id');
+            if (!codigoProjeto) {
+                showStyledAlert('Projeto não encontrado: parâmetro ausente na URL.');
+                return;
+            }
+            const projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+            const projeto = projetos[codigoProjeto];
+            if (projeto) preencherFolhaComProjeto(projeto);
+            else showStyledAlert('Projeto não encontrado no sistema.');
+        }
+        document.addEventListener('DOMContentLoaded', carregarFolha);
+    })();
+    document.getElementById('voltarBtn').onclick = function() {
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        let codigo = getQueryParam('codigo') || getQueryParam('id');
+        if (!codigo) {
+            // Tenta buscar o último projeto acessado do localStorage
+            let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+            let codigos = Object.keys(projetos);
+            if (codigos.length > 0) {
+                codigo = codigos[codigos.length - 1]; // Pega o último
+            }
+        }
+        if (codigo) {
+            window.location.href = 'folhaprogramacao-detalhada.html?codigo=' + codigo;
+        } else {
+            window.location.href = 'folhaprogramacao-detalhada.html';
+        }
+    };
+    </script>
 </body>
 </html>

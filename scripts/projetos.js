@@ -96,7 +96,6 @@ const projectsData = [
 // Configurações de paginação
 const projectsPerPage = 6;
 let currentPage = 1;
-let filteredProjects = [...projectsData];
 
 // Elementos DOM
 const projectsContainer = document.getElementById('projectsContainer');
@@ -109,6 +108,41 @@ const totalPagesEl = document.getElementById('totalPages');
 const prevPageBtn = document.querySelector('.pagination-btn:first-child');
 const nextPageBtn = document.querySelector('.pagination-btn:last-child');
 
+// Carregar projetos do localStorage, mesclando com os exemplos se necessário
+function getAllProjects() {
+    let localProjects = [];
+    try {
+        const projetosStorage = JSON.parse(localStorage.getItem('projetos')) || {};
+        localProjects = Object.values(projetosStorage).map((proj, idx) => ({
+            id: proj.id || (1000 + idx),
+            title: proj.title || proj.material || 'Projeto sem nome',
+            code: proj.code || '',
+            client: proj.client || '',
+            machine: proj.machine || '',
+            startDate: proj.startDate || '',
+            endDate: proj.endDate || '',
+            status: proj.status || 'active',
+            progress: proj.progress || 0,
+            lastUpdate: proj.lastUpdate || new Date().toISOString().slice(0,10),
+            image: proj.image || 'images/image-molde01.png'
+        }));
+    } catch (e) {
+        localProjects = [];
+    }
+    // Mesclar projetos de exemplo com os locais, sem duplicar pelo código
+    const allCodes = new Set(localProjects.map(p => p.code));
+    const merged = [...localProjects];
+    projectsData.forEach(exemplo => {
+        if (!allCodes.has(exemplo.code)) {
+            merged.push(exemplo);
+        }
+    });
+    return merged;
+}
+
+// Substituir o array fixo por função dinâmica
+let filteredProjects = getAllProjects();
+
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
     // Verificar se o usuário está logado
@@ -116,9 +150,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'login-page.html';
         return;
     }
-    // Carregar todos os projetos, sem filtro por operador
-    filteredProjects = [...projectsData];
-    // Carregar projetos iniciais já filtrando por máquina
+    // Carregar todos os projetos do localStorage (ou exemplos)
+    filteredProjects = getAllProjects();
     applyFilters();
     
     // Configurar eventos
@@ -142,6 +175,12 @@ document.addEventListener('DOMContentLoaded', function() {
             viewProjectDetails(projectId);
         }
     });
+
+    // Adicionar evento para recarregar projetos ao voltar para a página
+    window.addEventListener('focus', function() {
+        filteredProjects = getAllProjects();
+        applyFilters();
+    });
 });
 
 // Função para aplicar filtros
@@ -153,7 +192,9 @@ function applyFilters() {
 
     const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
 
-    filteredProjects = projectsData.filter(project => {
+    // Trocar para buscar todos os projetos do localStorage
+    const allProjects = getAllProjects();
+    filteredProjects = allProjects.filter(project => {
         // Filtro por máquina (obrigatório)
         if (maquinaSelecionada && ['01','02','03'].includes(maquinaSelecionada)) {
             if (project.machine.trim().toUpperCase() !== mapMaquina[maquinaSelecionada].toUpperCase()) {
@@ -237,16 +278,29 @@ function renderProjects() {
     
     // Verificar se há projetos para mostrar
     if (currentProjects.length === 0) {
+        // Verificar se é admin
+        const userRole = localStorage.getItem('userRole');
+        let createBtnHtml = '';
+        if (userRole === 'admin' || userRole === 'administrador') {
+            createBtnHtml = `<button class="create-project-btn" id="createProjectBtn"><i class="fas fa-plus"></i> Criar Projeto</button>`;
+        }
         projectsContainer.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-folder-open"></i>
                 <h3>Nenhum projeto encontrado</h3>
-                <p>Tente ajustar os filtros ou criar um novo projeto.</p>
-                <button class="create-project-btn">
-                    <i class="fas fa-plus"></i> Criar Projeto
-                </button>
+                <p>Tente ajustar os filtros${(userRole === 'admin' || userRole === 'administrador') ? ' ou criar um novo projeto.' : '.'}</p>
+                ${createBtnHtml}
             </div>
         `;
+        // Adicionar evento de clique para admin
+        if (userRole === 'admin' || userRole === 'administrador') {
+            const btn = document.getElementById('createProjectBtn');
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    window.location.href = 'importar-projetos.html';
+                });
+            }
+        }
         return;
     }
     
@@ -258,18 +312,13 @@ function renderProjects() {
     currentProjects.forEach(project => {
         const statusClass = `status-${project.status}`;
         const statusText = getStatusText(project.status);
-        
-        // Verificar se o usuário pode manipular este projeto
         const canManipulate = userRole === 'operador' && project.machine === userName;
-        
+        const isAdmin = userRole === 'admin' || userRole === 'administrador';
         const projectCard = document.createElement('div');
         projectCard.className = 'project-card';
-        
-        // Adicionar classe especial se o usuário puder manipular
         if (canManipulate) {
             projectCard.classList.add('can-manipulate');
         }
-        
         projectCard.innerHTML = `
             <div class="project-image">
                 <img src="${project.image}" alt="${project.title}">
@@ -280,20 +329,37 @@ function renderProjects() {
             <div class="project-content">
                 <h3 class="project-title">${project.title}</h3>
                 <p class="project-code">${project.code}</p>
-                
                 <div class="project-progress-bar">
                     <div class="progress-fill" style="width: ${project.progress}%"></div>
                 </div>
                 <div class="progress-percentage">${project.progress}% concluído</div>
-                
-                <a href="folhaprocesso.html?id=${project.id}" class="view-details-btn" data-id="${project.id}">
+                <a href="folhaprocesso.html?codigo=${project.code}" class="view-details-btn" data-id="${project.id}">
                     ${canManipulate ? 'Editar Projeto' : 'Ver Detalhes'}
                 </a>
+                ${isAdmin ? `<button class="delete-project-btn" data-code="${project.code}"><i class="fas fa-trash"></i> Excluir</button>` : ''}
             </div>
         `;
-        
         projectsContainer.appendChild(projectCard);
     });
+    // Adicionar eventos de exclusão
+    if (localStorage.getItem('userRole') === 'admin' || localStorage.getItem('userRole') === 'administrador') {
+        document.querySelectorAll('.delete-project-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const code = btn.getAttribute('data-code');
+                showStyledConfirm(`Tem certeza que deseja excluir o projeto <b>${code}</b>?`, () => {
+                    let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+                    if (projetos[code]) {
+                        delete projetos[code];
+                        localStorage.setItem('projetos', JSON.stringify(projetos));
+                        showCustomAlert('Projeto excluído com sucesso!', 'success');
+                        filteredProjects = getAllProjects();
+                        applyFilters();
+                    }
+                });
+            });
+        });
+    }
 }
 
 // Função de alerta customizado (caso não exista neste arquivo)
@@ -381,6 +447,42 @@ function isThisMonth(date, today) {
 
 function isThisYear(date, today) {
     return date.getFullYear() === today.getFullYear();
+}
+
+// Alerta estilizado de confirmação
+function showStyledConfirm(message, onConfirm) {
+    // Remove alerta anterior se existir
+    const oldModal = document.getElementById('customConfirmModal');
+    if (oldModal) oldModal.remove();
+    // Cria modal
+    const modal = document.createElement('div');
+    modal.id = 'customConfirmModal';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.background = 'rgba(0,0,0,0.35)';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.zIndex = '9999';
+    modal.innerHTML = `
+        <div style="background:#fff;padding:32px 28px 24px 28px;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:350px;text-align:center;">
+            <div style="font-size:18px;font-weight:600;margin-bottom:16px;">Confirmação</div>
+            <div style="font-size:15px;margin-bottom:24px;">${message}</div>
+            <button id="confirmYesBtn" style="background:#c82333;color:#fff;padding:8px 22px;border:none;border-radius:5px;font-weight:600;margin-right:10px;cursor:pointer;">Excluir</button>
+            <button id="confirmNoBtn" style="background:#e0e0e0;color:#222;padding:8px 22px;border:none;border-radius:5px;font-weight:600;cursor:pointer;">Cancelar</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('confirmYesBtn').onclick = function() {
+        modal.remove();
+        if (onConfirm) onConfirm();
+    };
+    document.getElementById('confirmNoBtn').onclick = function() {
+        modal.remove();
+    };
 }
 
 

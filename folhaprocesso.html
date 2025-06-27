@@ -28,7 +28,7 @@
                 </td>
                 <td class="header-right">
                     <p class="date-info">Data: <span class="span-info">10/02/2025</span></p>
-                    <a href="folhaprogramacao-detalhada.html" class="nav-button right">
+                    <a href="#" id="proximoBtn" class="nav-button right">
                         PRÓXIMO <i class="fas fa-arrow-right"></i>
                     </a>
                 </td>
@@ -74,5 +74,87 @@
             </tr>
         </table>
     </div>
+    <script>
+    // Integração localStorage para folha de processo
+    (function() {
+        function getQueryParam(...names) {
+            const urlParams = new URLSearchParams(window.location.search);
+            for (const name of names) {
+                const val = urlParams.get(name);
+                if (val) return val;
+            }
+            return null;
+        }
+        function showStyledAlert(msg) {
+            const old = document.getElementById('customFolhaAlert');
+            if (old) old.remove();
+            const div = document.createElement('div');
+            div.id = 'customFolhaAlert';
+            div.style.position = 'fixed';
+            div.style.top = '0';
+            div.style.left = '0';
+            div.style.width = '100vw';
+            div.style.height = '100vh';
+            div.style.background = 'rgba(0,0,0,0.25)';
+            div.style.display = 'flex';
+            div.style.alignItems = 'center';
+            div.style.justifyContent = 'center';
+            div.style.zIndex = '9999';
+            div.innerHTML = `<div style="background:#232136;padding:32px 28px 24px 28px;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:350px;text-align:center;"><div style='font-size:18px;font-weight:600;margin-bottom:16px;color:#fff;'>Atenção</div><div style='font-size:15px;margin-bottom:24px;color:#fff;'>${msg}</div><button style='background:#7c3aed;color:#fff;padding:8px 22px;border:none;border-radius:5px;font-weight:600;cursor:pointer;' onclick='document.getElementById("customFolhaAlert").remove()'>OK</button></div>`;
+            document.body.appendChild(div);
+        }
+        function preencherFolhaComProjeto(projeto) {
+            if (!projeto || !projeto.folhaProcesso) return;
+            const folha = projeto.folhaProcesso;
+            // Máquina
+            const maquinaEl = document.querySelector('.machine-title');
+            if (maquinaEl) maquinaEl.textContent = projeto.machine || '';
+            // Pasta do Programa
+            const pastaEl = document.querySelector('.program-id');
+            if (pastaEl) pastaEl.textContent = folha.pastaProgramas || '';
+            // Data
+            const dataEl = document.querySelector('.date-info .span-info');
+            if (dataEl) dataEl.textContent = folha.dataImpressao || '';
+            // Programador
+            const progEl = document.querySelector('.programmer-name .span-info');
+            if (progEl) progEl.textContent = folha.programador || '';
+            // Tempo Projeto
+            const tempoEl = document.querySelector('.project-time .span-info');
+            if (tempoEl) tempoEl.textContent = folha.tempoProjeto || '';
+            // Material
+            const materialEl = document.querySelector('.material-info .span-info-material, .material-info .info-value');
+            if (materialEl) materialEl.textContent = folha.material || '';
+            // Imagem
+            const imgEl = document.querySelector('.image-container img, .piece-image img');
+            if (imgEl) imgEl.src = folha.imagem || projeto.image || 'images/image-molde01.png';
+            // Centro do Bloco
+            const centroEl = document.querySelector('.footer-left .span-info');
+            if (centroEl) centroEl.textContent = folha.centroBloco || '';
+            // Ref em Z
+            const refZEl = document.querySelector('.footer-right .span-info');
+            if (refZEl) refZEl.textContent = folha.refZ || '';
+            // Observação
+            const obsEl = document.querySelector('.description-row .red-text');
+            if (obsEl) obsEl.textContent = folha.observacao || '';
+        }
+        function carregarFolha() {
+            const codigoProjeto = getQueryParam('codigo', 'id');
+            if (!codigoProjeto) {
+                showStyledAlert('Projeto não encontrado: parâmetro ausente na URL.');
+                return;
+            }
+            const projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+            const projeto = projetos[codigoProjeto];
+            if (projeto) preencherFolhaComProjeto(projeto);
+            else showStyledAlert('Projeto não encontrado no sistema.');
+            // Ajustar botão PRÓXIMO para passar o código
+            var proximoBtn = document.getElementById('proximoBtn');
+            if (proximoBtn) {
+                proximoBtn.href = 'folhaprogramacao-detalhada.html?codigo=' + codigoProjeto;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', carregarFolha);
+    })();
+    </script>
 </body>
 </html>

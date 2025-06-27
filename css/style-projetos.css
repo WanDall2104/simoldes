@@ -562,3 +562,26 @@
     left: 10px;
     top: 10px;
 }
+
+.delete-project-btn {
+    background: #c82333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-weight: 600;
+    margin-top: 12px;
+    margin-left: 0;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+.delete-project-btn i {
+    font-size: 16px;
+}
+.delete-project-btn:hover {
+    background: #a71d2a;
+}

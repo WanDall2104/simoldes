@@ -43,86 +43,90 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Controle do formulário manual
-    const manualForm = document.getElementById('manualForm');
-    manualForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Pega a máquina do login
-        const maquinaSelecionada = localStorage.getItem('userMaquina');
-        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
-        const machine = mapMaquina[maquinaSelecionada] || '';
-        
-        const projetoData = {
-            // Informações Básicas
-            material: document.getElementById('materialValue').value,
-            programPath: document.getElementById('programPath').value,
-            programmerName: document.getElementById('programmerName').value,
-            estimatedTime: document.getElementById('estimatedTime').value,
-
-            // Detalhes do Programa
-            programNumber: document.getElementById('programNumber').value,
-            status: document.getElementById('programStatus').value,
-            programmerComments: document.getElementById('programmerComments').value,
-            pathType: document.getElementById('pathType').value,
-            reference: document.getElementById('reference').value,
-
-            // Ferramentas
-            tools: {
-                diameter: document.getElementById('toolDiameter').value,
-                rc: document.getElementById('toolRC').value,
-                bib: document.getElementById('toolBib').value,
-                alt: document.getElementById('toolAlt').value,
-                zMin: document.getElementById('zMin').value,
-                lat3D: document.getElementById('lat3D').value,
-                lat: document.getElementById('lat').value,
-                vert: document.getElementById('vert').value,
-                latStep: document.getElementById('latStep').value,
-                vertStep: document.getElementById('vertStep').value,
-                tolerance: document.getElementById('tolerance').value,
-                rotation: document.getElementById('rotation').value,
-                advance: document.getElementById('advance').value,
-                angle: document.getElementById('angle').value,
-                workPlane: document.getElementById('workPlane').value
-            },
-
-            // Arquivos do Programa
-            files: {
-                fresa: document.getElementById('fresaFile').value,
-                sub: document.getElementById('subFile').value
-            },
-
-            // Tempos
-            times: {
-                cutTime: document.getElementById('cutTime')?.value,
-                totalTime: document.getElementById('totalTime')?.value
-            },
-
-            // Máquina do usuário logado
-            machine: machine
-        };
-
-        // Aqui você pode adicionar a lógica para salvar os dados
-        console.log('Dados do projeto:', projetoData);
-        
-        // Exemplo de como enviar os dados para o servidor
-        fetch('/api/projetos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(projetoData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            showCustomAlert('Projeto salvo com sucesso!');
-            manualForm.reset();
-        })
-        .catch(error => {
-            console.error('Erro ao salvar projeto:', error);
-            showCustomAlert('Erro ao salvar projeto. Por favor, tente novamente.');
+    // Controle do formulário único de cadastro completo
+    const formProjetoCompleto = document.getElementById('formProjetoCompleto');
+    if (formProjetoCompleto) {
+        const programNumberInput = document.getElementById('programNumber');
+        if (programNumberInput) {
+            programNumberInput.value = gerarCodigoProjeto();
+            programNumberInput.addEventListener('focus', function() {
+                if (!programNumberInput.value) {
+                    programNumberInput.value = gerarCodigoProjeto();
+                }
+            });
+        }
+        formProjetoCompleto.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Dados do card
+            const maquinaSelecionada = localStorage.getItem('userMaquina');
+            const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+            const machine = mapMaquina[maquinaSelecionada] || '';
+            let codigoProjeto = document.getElementById('programNumber').value.trim();
+            if (!codigoProjeto) {
+                codigoProjeto = gerarCodigoProjeto();
+            }
+            const title = document.getElementById('materialValue').value;
+            // Folha de processo
+            const folhaProcesso = {
+                material: document.getElementById('folhaMaterial').value,
+                pastaProgramas: document.getElementById('folhaPastaProgramas').value,
+                pastaPowerMill: document.getElementById('folhaPastaPowerMill').value,
+                programador: document.getElementById('folhaProgramador').value,
+                tempoProjeto: document.getElementById('folhaTempoProjeto').value,
+                sobLiq: document.getElementById('folhaSobLiq').value,
+                centroBloco: document.getElementById('folhaCentroBloco').value,
+                refZ: document.getElementById('folhaRefZ').value,
+                observacao: document.getElementById('folhaObservacao').value,
+                imagem: document.getElementById('folhaImagem').value,
+                dataImpressao: document.getElementById('folhaData').value
+            };
+            // Primeiro programa detalhado
+            const programaDetalhado = {
+                numero: document.getElementById('progNumero').value,
+                percurso: document.getElementById('progPercurso').value,
+                referencia: document.getElementById('progReferencia').value,
+                comentario: document.getElementById('progComentario').value,
+                ferramentaO: document.getElementById('progFerramentaO').value,
+                ferramentaRC: document.getElementById('progFerramentaRC').value,
+                ferramentaRib: document.getElementById('progFerramentaRib').value,
+                ferramentaAlt: document.getElementById('progFerramentaAlt').value,
+                zMin: document.getElementById('progZMin').value,
+                lat2D: document.getElementById('progLat2D').value,
+                latVert: document.getElementById('progLatVert').value,
+                lat: document.getElementById('progLat').value,
+                vert: document.getElementById('progVert').value,
+                tol: document.getElementById('progTol').value,
+                rot: document.getElementById('progRot').value,
+                avAngular: document.getElementById('progAvAngular').value,
+                tempoTrab: document.getElementById('progTempoTrab').value,
+                corte: document.getElementById('progCorte').value,
+                total: document.getElementById('progTotal').value,
+                posicao: document.getElementById('progPosicao').value,
+                fresa: document.getElementById('progFresa').value,
+                sup: document.getElementById('progSup').value,
+                status: document.getElementById('progStatus').value
+            };
+            // Monta objeto do projeto completo
+            const projetoData = {
+                title: title,
+                code: codigoProjeto,
+                machine: machine,
+                status: 'active',
+                startDate: new Date().toISOString().slice(0,10),
+                progress: 0,
+                image: 'images/image-molde01.png',
+                folhaProcesso: folhaProcesso,
+                programas: [programaDetalhado]
+            };
+            // Salva no localStorage
+            let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+            projetos[codigoProjeto] = projetoData;
+            localStorage.setItem('projetos', JSON.stringify(projetos));
+            showCustomAlert('Projeto completo salvo com sucesso!');
+            formProjetoCompleto.reset();
+            if (programNumberInput) programNumberInput.value = gerarCodigoProjeto();
         });
-    });
+    }
 
     // Controle da importação de arquivos
     const importForm = document.getElementById('importarExcelForm');
@@ -294,10 +298,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     angle: document.getElementById('novoAngle').value,
                     workPlane: document.getElementById('novoWorkPlane').value
                 },
-                arquivos: {
-                    fresa: document.getElementById('novoFresaFile').value,
-                    sub: document.getElementById('novoSubFile').value
-                }
+                fresa: document.getElementById('novoFresaFile').value,
+                sub: document.getElementById('novoSubFile').value
             };
             // Salva no localStorage
             let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
@@ -325,3 +327,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Função para gerar código aleatório de projeto
+function gerarCodigoProjeto() {
+    return 'PRJ-' + Math.floor(100000 + Math.random() * 900000);
+}
