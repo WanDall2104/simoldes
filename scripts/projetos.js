@@ -5,8 +5,6 @@ const projectsData = [
         title: "Molde para Painel Frontal",
         code: "PF-2023-001",
         client: "",
-        responsible: "Carlos Silva",
-        operator: "Leonardo",
         machine: "F1400",
         startDate: "2023-05-10",
         endDate: "2023-08-15",
@@ -20,8 +18,6 @@ const projectsData = [
         title: "Molde para Carcaça de Motor",
         code: "CM-2023-042",
         client: "",
-        responsible: "Ana Oliveira",
-        operator: "Vinicius",
         machine: "F2000",
         startDate: "2023-04-05",
         endDate: "2023-07-20",
@@ -35,8 +31,6 @@ const projectsData = [
         title: "Molde para Peças Plásticas",
         code: "PP-2023-018",
         client: "",
-        responsible: "Roberto Almeida",
-        operator: "Leonardo",
         machine: "F1400",
         startDate: "2023-03-15",
         endDate: "2023-05-30",
@@ -50,8 +44,6 @@ const projectsData = [
         title: "Molde para Componentes Eletrônicos",
         code: "CE-2023-027",
         client: "",
-        responsible: "Juliana Costa",
-        operator: "Vinicius",
         machine: "F2000",
         startDate: "2023-06-01",
         endDate: "2023-09-15",
@@ -65,8 +57,6 @@ const projectsData = [
         title: "Molde para Peças Automotivas",
         code: "PA-2023-033",
         client: "",
-        responsible: "Carlos Silva",
-        operator: "Vinicius",
         machine: "F1400",
         startDate: "2023-05-20",
         endDate: "2023-08-30",
@@ -80,14 +70,25 @@ const projectsData = [
         title: "Molde para Equipamentos Médicos",
         code: "EM-2023-009",
         client: "",
-        responsible: "Mariana Santos",
-        operator: "Leonardo",
         machine: "F2000",
         startDate: "2023-02-10",
         endDate: "2023-06-15",
         status: "completed",
         progress: 100,
         lastUpdate: "2023-06-12",
+        image: "images/image-molde01.png"
+    },
+    {
+        id: 7,
+        title: "Molde para Peças Automotivas",
+        code: "PA-2023-033",
+        client: "",
+        machine: "F3000",
+        startDate: "2023-05-20",
+        endDate: "2023-08-30",
+        status: "active",
+        progress: 45,
+        lastUpdate: "2023-06-25",
         image: "images/image-molde01.png"
     }
 ];
@@ -164,7 +165,6 @@ function applyFilters() {
         const matchesSearch = 
             project.title.toLowerCase().includes(searchTerm) ||
             project.code.toLowerCase().includes(searchTerm) ||
-            project.operator.toLowerCase().includes(searchTerm) ||
             project.machine.toLowerCase().includes(searchTerm);
 
         // Filtro de status
@@ -260,7 +260,7 @@ function renderProjects() {
         const statusText = getStatusText(project.status);
         
         // Verificar se o usuário pode manipular este projeto
-        const canManipulate = userRole === 'operador' && project.operator === userName;
+        const canManipulate = userRole === 'operador' && project.machine === userName;
         
         const projectCard = document.createElement('div');
         projectCard.className = 'project-card';
@@ -280,13 +280,6 @@ function renderProjects() {
             <div class="project-content">
                 <h3 class="project-title">${project.title}</h3>
                 <p class="project-code">${project.code}</p>
-                
-                <div class="project-info">
-                    <div class="info-item">
-                        <span class="info-label">Responsável:</span>
-                        <span class="info-value">${project.operator}</span>
-                    </div>
-                </div>
                 
                 <div class="project-progress-bar">
                     <div class="progress-fill" style="width: ${project.progress}%"></div>
@@ -336,7 +329,7 @@ function viewProjectDetails(projectId) {
     const userRole = localStorage.getItem('userRole');
     const userName = localStorage.getItem('currentUser');
     
-    const hasAccess = (userRole === 'admin' || userRole === 'administrador') || (userRole === 'operador' && project.operator === userName);
+    const hasAccess = (userRole === 'admin' || userRole === 'administrador') || (userRole === 'operador' && project.machine === userName);
     
     if (!hasAccess) {
         showCustomAlert('Você não tem permissão para acessar este projeto!', 'error');

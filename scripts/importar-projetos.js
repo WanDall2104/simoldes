@@ -48,6 +48,11 @@ document.addEventListener('DOMContentLoaded', function() {
     manualForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Pega a máquina do login
+        const maquinaSelecionada = localStorage.getItem('userMaquina');
+        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+        const machine = mapMaquina[maquinaSelecionada] || '';
+        
         const projetoData = {
             // Informações Básicas
             material: document.getElementById('materialValue').value,
@@ -89,9 +94,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Tempos
             times: {
-                cutTime: document.getElementById('cutTime').value,
-                totalTime: document.getElementById('totalTime').value
-            }
+                cutTime: document.getElementById('cutTime')?.value,
+                totalTime: document.getElementById('totalTime')?.value
+            },
+
+            // Máquina do usuário logado
+            machine: machine
         };
 
         // Aqui você pode adicionar a lógica para salvar os dados
@@ -195,7 +203,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     importarBtn.addEventListener('click', function() {
+        // Pega a máquina do login
+        const maquinaSelecionada = localStorage.getItem('userMaquina');
+        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+        const machine = mapMaquina[maquinaSelecionada] || '';
         // Aqui você pode adicionar a lógica para importar os dados
+        // Exemplo: ao montar o objeto do projeto, inclua o campo machine
+        // Exemplo fictício:
+        // const projetoImportado = { ...dadosExtraidos, machine };
         showCustomAlert('Dados importados com sucesso!');
         previewContainer.innerHTML = '';
         fileInput.value = '';

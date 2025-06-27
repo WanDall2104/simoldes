@@ -37,25 +37,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log(`Usuário logado: ${userName}, Função: ${userRole}`);
     
-    // Filtrar histórico baseado no nível de acesso
-    if (userRole === 'administrador' || userRole === 'admin') {
-        // Administradores veem todos os projetos
-        filteredItems = [...historicoData];
-    } else if (userRole === 'operador') {
-        // Operadores só veem seus próprios projetos
-        filteredItems = historicoData.filter(item => 
-            item.responsible === userName || item.operator === userName
-        );
-    } else {
-        alert('Você não tem permissão para acessar esta página');
-        window.location.href = 'index.html';
-        return;
-    }
-    
-    console.log(`Itens filtrados: ${filteredItems.length}`);
-    
-    // Carregar histórico inicial
-    renderHistorico();
+    // Carregar todos os itens do histórico, sem filtro por responsável
+    filteredItems = [...historicoData];
+    // Carregar histórico inicial já filtrando por máquina
+    applyFilters();
     
     // Configurar eventos
     searchBtn.addEventListener('click', applyFilters);
@@ -157,38 +142,23 @@ document.addEventListener('DOMContentLoaded', function() {
 function applyFilters() {
     const searchTerm = historicoSearch.value.toLowerCase();
     const dateValue = dateFilter.value;
-    const machineValue = machineFilter.value;
     const userRole = localStorage.getItem('userRole');
-    const userName = localStorage.getItem('currentUser');
-    
-    // LOGS DE DEPURAÇÃO
-    console.log('userRole:', userRole);
-    console.log('userName:', userName);
-    console.log('searchTerm:', searchTerm);
-    
-    // Filtrar por termo de busca e nível de acesso
+    const maquinaSelecionada = localStorage.getItem('userMaquina');
+    const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+
     filteredItems = historicoData.filter(item => {
-        // Verificar se o usuário tem acesso a este projeto
-        const hasAccess = userRole === 'admin' || userRole === 'administrador' || 
-                         (userRole === 'operador' && (item.responsible === userName || item.operator === userName));
-        if (!hasAccess) return false;
-        
+        // Filtro por máquina (obrigatório)
+        if (maquinaSelecionada && ['01','02','03'].includes(maquinaSelecionada)) {
+            if (item.machine.trim().toUpperCase() !== mapMaquina[maquinaSelecionada].toUpperCase()) {
+                return false;
+            }
+        }
+        // Filtro de busca
         const matchesSearch = 
             item.title.toLowerCase().includes(searchTerm) ||
             item.code.toLowerCase().includes(searchTerm) ||
-            item.responsible.toLowerCase().includes(searchTerm) ||
             item.machine.toLowerCase().includes(searchTerm);
-        
-        // LOG DE DEPURAÇÃO PARA CADA ITEM
-        if (matchesSearch) {
-            console.log('Item encontrado:', item);
-        }
-        // Filtrar por máquina
-        const matchesMachine = 
-            machineValue === 'all' || 
-            item.machine.toLowerCase().includes(machineValue);
-        
-        // Filtrar por data
+        // Filtro de data
         let matchesDate = true;
         if (dateValue !== 'all') {
             const today = new Date();
@@ -204,8 +174,7 @@ function applyFilters() {
                 matchesDate = isThisYear(projectDate, today);
             }
         }
-        
-        return matchesSearch && matchesMachine && matchesDate;
+        return matchesSearch && matchesDate;
     });
     
     // Resetar para a primeira página e renderizar
@@ -268,17 +237,8 @@ function renderHistorico() {
         const statusClass = `status-${item.status}`;
         const statusText = getStatusText(item.status);
         
-        // Verificar se o usuário é responsável por este projeto
-        const userName = localStorage.getItem('currentUser');
-        const isResponsible = item.responsible === userName;
-        
         const itemCard = document.createElement('div');
         itemCard.className = 'projeto-card';
-        
-        // Adicionar classe especial se o usuário for responsável
-        if (isResponsible) {
-            itemCard.classList.add('is-responsible');
-        }
         
         itemCard.innerHTML = `
             <div class="projeto-header">
@@ -289,10 +249,6 @@ function renderHistorico() {
                 <div class="detail-item">
                     <i class="fas fa-cog"></i>
                     <span>Máquina: <strong>${item.machine}</strong></span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-user"></i>
-                    <span>Responsável: <strong>${item.responsible}</strong></span>
                 </div>
                 <div class="detail-item">
                     <i class="fas fa-calendar-check"></i>

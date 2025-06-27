@@ -45,7 +45,6 @@ function showProjectModal(project) {
     infoSection.innerHTML = `
         <div class="info-row"><span class="info-label">Código:</span> ${project.code}</div>
         <div class="info-row"><span class="info-label">Máquina:</span> ${project.machine}</div>
-        <div class="info-row"><span class="info-label">Responsável:</span> ${project.responsible}</div>
         <div class="info-row"><span class="info-label">Concluído em:</span> ${project.completionDate ? formatDate(project.completionDate) : 'Em andamento'}</div>
     `;
     
