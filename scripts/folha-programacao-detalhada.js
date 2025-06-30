@@ -303,9 +303,23 @@ document.addEventListener('DOMContentLoaded', function() {
         voltarBtn.addEventListener('click', function() {
             const codigoProjeto = getQueryParam('codigo');
             if (timerAtivo) {
-                if (confirm('Há um timer em andamento. Deseja realmente sair desta página?')) {
-                    window.location.href = 'folhaprocesso.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
-                }
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: 'Há um timer em andamento. Deseja realmente sair desta página?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, sair',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'swal2-confirm-custom',
+                        cancelButton: 'swal2-cancel-custom'
+                    },
+                    buttonsStyling: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'folhaprocesso.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
+                    }
+                });
             } else {
                 window.location.href = 'folhaprocesso.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
             }
@@ -315,9 +329,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (voltarInicioBtn) {
         voltarInicioBtn.addEventListener('click', function() {
             if (timerAtivo) {
-                if (confirm('Há um timer em andamento. Deseja realmente sair desta página?')) {
-                    window.location.href = 'index.html';
-                }
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: 'Há um timer em andamento. Deseja realmente sair desta página?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, sair',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'swal2-confirm-custom',
+                        cancelButton: 'swal2-cancel-custom'
+                    },
+                    buttonsStyling: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'index.html';
+                    }
+                });
             } else {
                 window.location.href = 'index.html';
             }
@@ -334,15 +362,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     mostrarNotificacao('Todos os programas devem ser concluídos antes de finalizar o projeto.', 'error');
                     this.checked = false;
                 } else {
-                    if (confirm('Tem certeza que deseja finalizar este projeto?')) {
-                        moverProjetoParaHistorico();
-                        mostrarNotificacao('Projeto finalizado com sucesso!');
-                        setTimeout(() => {
-                            window.location.href = 'projetos.html';
-                        }, 1500);
-                    } else {
-                        this.checked = false;
-                    }
+                    Swal.fire({
+                        title: 'Finalizar Projeto',
+                        text: 'Tem certeza que deseja finalizar este projeto?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sim, finalizar',
+                        cancelButtonText: 'Cancelar',
+                        customClass: {
+                            confirmButton: 'swal2-confirm-custom',
+                            cancelButton: 'swal2-cancel-custom'
+                        },
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            moverProjetoParaHistorico();
+                            mostrarNotificacao('Projeto finalizado com sucesso!');
+                            setTimeout(() => {
+                                window.location.href = 'projetos.html';
+                            }, 1500);
+                        } else {
+                            this.checked = false;
+                        }
+                    });
                 }
             }
         });
@@ -354,9 +396,23 @@ document.addEventListener('DOMContentLoaded', function() {
         verAmplaBtn.addEventListener('click', function() {
             const codigoProjeto = getQueryParam('codigo');
             if (timerAtivo) {
-                if (confirm('Há um timer em andamento. Deseja realmente sair desta página?')) {
-                    window.location.href = 'folhaprocesso-ampla.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
-                }
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: 'Há um timer em andamento. Deseja realmente sair desta página?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, sair',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'swal2-confirm-custom',
+                        cancelButton: 'swal2-cancel-custom'
+                    },
+                    buttonsStyling: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'folhaprocesso-ampla.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
+                    }
+                });
             } else {
                 window.location.href = 'folhaprocesso-ampla.html' + (codigoProjeto ? ('?codigo=' + codigoProjeto) : '');
             }

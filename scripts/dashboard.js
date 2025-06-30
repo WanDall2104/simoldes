@@ -45,16 +45,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Atualizar dashboard
     function atualizarDashboard() {
         const projetos = getAllProjects();
-        let ativos = 0, concluidos = 0, pendentes = 0;
+        let ativos = 0, pendentes = 0;
+
         projetos.forEach(proj => {
             const progresso = getProgressoProjeto(proj.code, proj.progress);
-            if (progresso === 100) {
-                concluidos++;
-            } else if (progresso > 0) {
-                ativos++;
+            if (progresso > 0 && progresso < 100) {
+                // Buscar status dos programas do projeto
+                const statusKey = 'programasStatus_' + proj.code;
+                const arr = JSON.parse(localStorage.getItem(statusKey));
+                if (Array.isArray(arr) && arr.length > 0) {
+                    const temConcluido = arr.some(p => p.status === 'completed');
+                    if (temConcluido) {
+                        ativos++;
+                    } else {
+                        pendentes++;
+                    }
+                } else {
+                    // Se não há programas, considerar como pendente
+                    pendentes++;
+                }
             }
-            pendentes += getPendentesProjeto(proj.code);
         });
+
+        // Projetos concluídos (apenas do histórico)
+        const historico = JSON.parse(localStorage.getItem('historicoProjetos')) || [];
+        const concluidos = historico.length;
+
         if (ativosEl) ativosEl.textContent = ativos;
         if (pendentesEl) pendentesEl.textContent = pendentes;
         if (concluidosEl) concluidosEl.textContent = concluidos;
