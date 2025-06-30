@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (typeof THREE.OrbitControls !== 'undefined') {
             controls = new THREE.OrbitControls(camera, renderer.domElement);
         } else {
-            alert('OrbitControls não foi carregado corretamente. A visualização 3D não funcionará.');
+            mostrarNotificacao('OrbitControls não foi carregado corretamente. A visualização 3D não funcionará.', 'error');
             return;
         }
         controls.enableDamping = true;

@@ -61,10 +61,18 @@ function showProjectModal(project) {
     
     const progressBar = document.createElement('div');
     progressBar.className = 'progress-bar';
-    progressBar.style.width = `${project.progress}%`;
+    
+    // Calcular progresso real
+    let total = 0, concluidos = 0;
+    if (Array.isArray(project.programas)) {
+        total = project.programas.length;
+        concluidos = project.programas.filter(p => p.status === 'completed').length;
+    }
+    const progress = total > 0 ? Math.round((concluidos / total) * 100) : 0;
+    progressBar.style.width = progress + '%';
     
     const progressText = document.createElement('div');
-    progressText.textContent = `${project.progress}% concluído`;
+    progressText.textContent = `${progress}% concluído`;
     
     progressBarContainer.appendChild(progressBar);
     progressSection.appendChild(progressTitle);
@@ -82,13 +90,13 @@ function showProjectModal(project) {
     const programsList = document.createElement('div');
     programsList.className = 'programs-list';
     
-    if (project.programs && project.programs.length > 0) {
-        project.programs.forEach(program => {
+    if (Array.isArray(project.programas) && project.programas.length > 0) {
+        project.programas.forEach(program => {
             const programItem = document.createElement('div');
             programItem.className = 'program-item';
             
             const programName = document.createElement('div');
-            programName.textContent = program.nome;
+            programName.textContent = program.nome || program.title || program.code || '-';
             
             const programStatus = document.createElement('div');
             programStatus.className = `program-status ${program.status}`;
@@ -96,6 +104,32 @@ function showProjectModal(project) {
             
             programItem.appendChild(programName);
             programItem.appendChild(programStatus);
+            
+            // Se concluído, mostrar assinatura e matrícula se existirem
+            if (program.status === 'completed' && project.assinaturas && project.assinaturas[program.id]) {
+                const assinaturaInfo = project.assinaturas[program.id];
+                const assinaturaDiv = document.createElement('div');
+                assinaturaDiv.className = 'assinatura-info';
+                if (assinaturaInfo.assinatura) {
+                    const img = document.createElement('img');
+                    img.src = assinaturaInfo.assinatura;
+                    img.alt = 'Assinatura';
+                    img.style.maxWidth = '80px';
+                    img.style.maxHeight = '40px';
+                    img.style.display = 'block';
+                    img.style.marginBottom = '2px';
+                    img.style.border = '1px solid #ccc';
+                    img.style.background = '#fff';
+                    assinaturaDiv.appendChild(img);
+                }
+                if (assinaturaInfo.matricula) {
+                    const matSpan = document.createElement('span');
+                    matSpan.textContent = `Matrícula: ${assinaturaInfo.matricula}`;
+                    assinaturaDiv.appendChild(matSpan);
+                }
+                programItem.appendChild(assinaturaDiv);
+            }
+            
             programsList.appendChild(programItem);
         });
     } else {

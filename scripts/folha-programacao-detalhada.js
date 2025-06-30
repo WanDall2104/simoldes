@@ -1,3 +1,28 @@
+let signaturePad = null; // Agora global para todo o arquivo
+const programSignatures = {}; // Agora global para todo o arquivo
+
+// 1. Obter o identificador do projeto da URL
+const urlParams = new URLSearchParams(window.location.search);
+const projetoId = urlParams.get('id') || urlParams.get('codigo') || 'default';
+
+// 2. Usar o identificador do projeto para as chaves do localStorage
+const STORAGE_KEY = 'programSignatures_' + projetoId;
+const PROGRAMS_KEY = 'programasStatus_' + projetoId;
+
+let processoIniciado = false;
+
+const programas = [
+    { id: 7, nome: 'Programa: 07', status: 'pending', descricao: 'O contramolde foi aparecer aqui' },
+    { id: 8, nome: 'Programa: 08', status: 'pending' },
+    { id: 9, nome: 'Programa: 09', status: 'pending' },
+    { id: 10, nome: 'Programa: 10', status: 'pending' },
+    { id: 11, nome: 'Programa: 11', status: 'pending' },
+    { id: 12, nome: 'Programa: 12', status: 'pending' },
+    { id: 13, nome: 'Programa: 13', status: 'pending' },
+    { id: 14, nome: 'Programa: 14', status: 'pending' },
+    { id: 15, nome: 'Programa: 15', status: 'pending' }
+];
+
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos DOM
     const programItemsContainer = document.getElementById('programItems');
@@ -14,23 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const tempoCorte = document.getElementById('tempoCortado');
     const tempoTotal = document.getElementById('tempoTotal');
     const progressPercentage = document.getElementById('progressPercentage');
-    
-    // Objeto para armazenar assinaturas
-    const programSignatures = {};
-    let signaturePad = null;
-    
-    // Dados de exemplo - programas
-    const programas = [
-        { id: 7, nome: 'Programa: 07', status: 'completed', descricao: 'O contramolde foi aparecer aqui' },
-        { id: 8, nome: 'Programa: 08', status: 'pending' },
-        { id: 9, nome: 'Programa: 09', status: 'pending' },
-        { id: 10, nome: 'Programa: 10', status: 'pending' },
-        { id: 11, nome: 'Programa: 11', status: 'pending' },
-        { id: 12, nome: 'Programa: 12', status: 'pending' },
-        { id: 13, nome: 'Programa: 13', status: 'pending' },
-        { id: 14, nome: 'Programa: 14', status: 'pending' },
-        { id: 15, nome: 'Programa: 15', status: 'pending' }
-    ];
     
     // Variáveis para controle de tempo
     let timerInterval = null;
@@ -84,12 +92,27 @@ document.addEventListener('DOMContentLoaded', function() {
             item.className = `program-item ${programa.status}`;
             item.dataset.id = programa.id;
             
-            // Simplificado para mostrar apenas o nome do programa e status como na imagem
+            // Adicionar assinatura, matrícula e nome se existir
+            let assinaturaHTML = '';
+            const assinaturaInfo = programSignatures[programa.id];
+            if (assinaturaInfo) {
+                assinaturaHTML = `
+                    <div class="assinatura-info">
+                        <img src="${assinaturaInfo.assinatura}" alt="Assinatura" class="assinatura-img" style="max-width:80px; max-height:40px; display:block; margin-bottom:2px; border:1px solid #ccc; background:#fff;" />
+                        <div class="assinatura-dados">
+                            <span class="assinatura-matricula">Matrícula: ${assinaturaInfo.matricula}</span><br>
+                            <span class="assinatura-nome">${assinaturaInfo.nome}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
             item.innerHTML = `
                 <div class="program-name">${programa.nome}</div>
                 <div class="program-status ${programa.status === 'completed' ? 'completed' : 'pending'}">
                     ${programa.status === 'completed' ? 'Concluído' : 'Pendente'}
                 </div>
+                ${assinaturaHTML}
             `;
             
             // Adicionar evento de clique para selecionar programa
@@ -152,17 +175,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (descriptionText && programa.descricao) {
                 descriptionText.nextSibling.textContent = ` ${programa.descricao}`;
             }
-            
-            // Habilitar/desabilitar botões conforme o status
-            if (programa.status === 'completed') {
-                iniciarBtn.disabled = true;
-                pausarBtn.disabled = true;
-                concluirBtn.disabled = true;
-            } else {
-                iniciarBtn.disabled = false;
-                pausarBtn.disabled = true;
-                concluirBtn.disabled = true;
-            }
         }
         
         // Atualizar número do programa na área de assinatura
@@ -175,15 +187,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (signaturePad) {
             signaturePad.clear();
             if (programSignatures[id]) {
-                signaturePad.fromDataURL(programSignatures[id]);
+                signaturePad.fromDataURL(programSignatures[id].assinatura);
             }
         }
+        processoIniciado = false;
+        atualizarEstadoSalvarAssinaturaBtn();
+        atualizarEstadoConcluirBtn();
     }
     
     // Iniciar timer
     function iniciarTimer() {
         if (timerAtivo) return;
-        
+        processoIniciado = true;
+        atualizarEstadoSalvarAssinaturaBtn();
+        atualizarEstadoConcluirBtn();
         timerAtivo = true;
         iniciarBtn.disabled = true;
         pausarBtn.disabled = false;
@@ -208,68 +225,60 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Concluir processo
     function concluirProcesso() {
-        pausarTimer();
-        
         // Obter o ID do programa ativo
         const itemAtivo = document.querySelector('.program-item.active');
         if (itemAtivo) {
             const id = parseInt(itemAtivo.dataset.id);
-            
-            // Verificar se há assinatura para este programa
+            // Verificar se existe assinatura salva para este programa
             if (!programSignatures[id]) {
-                if (!confirm('Este programa não possui assinatura. Deseja continuar mesmo assim?')) {
-                    return;
-                }
+                mostrarNotificacao('A assinatura é obrigatória para concluir o processo!', 'error');
+                return;
             }
-            
+            pausarTimer();
             const index = programas.findIndex(p => p.id === id);
-            
             if (index !== -1) {
                 programas[index].status = 'completed';
+                salvarProgramasLS(); // Salvar status ao concluir
+                atualizarProgressoProjeto(); // Atualizar progresso ao concluir
                 renderizarProgramas();
-                
                 // Selecionar o próximo programa pendente
                 const proximoPendente = programas.find(p => p.status === 'pending');
                 if (proximoPendente) {
                     selecionarPrograma(proximoPendente.id);
                 }
-                
                 // Mostrar feedback visual
                 mostrarNotificacao('Programa concluído com sucesso!');
             }
+            // Resetar timer
+            segundosDecorridos = 0;
+            atualizarDisplayTempo();
+            iniciarBtn.disabled = false;
+            pausarBtn.disabled = true;
+            concluirBtn.disabled = true;
         }
-        
-        // Resetar timer
-        segundosDecorridos = 0;
-        atualizarDisplayTempo();
-        
-        iniciarBtn.disabled = false;
-        pausarBtn.disabled = true;
-        concluirBtn.disabled = true;
     }
     
     // Função para mostrar notificação
     function mostrarNotificacao(mensagem, tipo = 'success') {
-        // Verificar se já existe uma notificação
-        let notificacao = document.querySelector('.notificacao');
-        if (notificacao) {
-            notificacao.remove();
-        }
-        
-        // Criar nova notificação
-        notificacao = document.createElement('div');
-        notificacao.className = `notificacao ${tipo}`;
-        notificacao.textContent = mensagem;
-        
-        // Adicionar ao corpo do documento
-        document.body.appendChild(notificacao);
-        
-        // Remover após 3 segundos
+        // Remove qualquer alerta anterior
+        const alertaAntigo = document.querySelector('.custom-alert-toast');
+        if (alertaAntigo) alertaAntigo.remove();
+
+        const alerta = document.createElement('div');
+        alerta.className = 'custom-alert-toast' + (tipo === 'error' ? ' error' : '');
+        alerta.innerHTML = `
+            <span>${mensagem}</span>
+            <button class="custom-alert-close" aria-label="Fechar alerta">&times;</button>
+        `;
+
+        document.body.appendChild(alerta);
+
+        // Fechar ao clicar no X
+        alerta.querySelector('.custom-alert-close').onclick = () => alerta.remove();
+
+        // Fechar automaticamente após 3 segundos
         setTimeout(() => {
-            notificacao.classList.add('fadeOut');
-            setTimeout(() => {
-                notificacao.remove();
-            }, 500);
+            if (alerta.parentNode) alerta.remove();
         }, 3000);
     }
     
@@ -318,15 +327,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evento para finalizar projeto
     if (finalizarCheckbox) {
         finalizarCheckbox.addEventListener('change', function() {
+            console.log("Checkbox de finalizar projeto alterado");
             if (this.checked) {
                 const todosConcluidos = programas.every(p => p.status === 'completed');
-                
                 if (!todosConcluidos) {
-                    alert('Todos os programas devem ser concluídos antes de finalizar o projeto.');
+                    mostrarNotificacao('Todos os programas devem ser concluídos antes de finalizar o projeto.', 'error');
                     this.checked = false;
                 } else {
                     if (confirm('Tem certeza que deseja finalizar este projeto?')) {
-                        // Aqui você pode adicionar código para salvar o projeto como finalizado
+                        moverProjetoParaHistorico();
                         mostrarNotificacao('Projeto finalizado com sucesso!');
                         setTimeout(() => {
                             window.location.href = 'projetos.html';
@@ -355,6 +364,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Inicializar a interface
+    carregarAssinaturas();
+    carregarProgramasLS();
     renderizarProgramas();
     
     // Selecionar o primeiro programa por padrão
@@ -376,11 +387,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (itemAtivo) {
                 const id = parseInt(itemAtivo.dataset.id);
                 if (programSignatures[id]) {
-                    signaturePad.fromDataURL(programSignatures[id]);
+                    signaturePad.fromDataURL(programSignatures[id].assinatura);
                 }
             }
         }
     });
+    
+    atualizarEstadoSalvarAssinaturaBtn();
+    atualizarEstadoConcluirBtn();
 });
 
 // Funções para gerenciar assinaturas
@@ -391,29 +405,35 @@ function limparAssinatura() {
 }
 
 function salvarAssinatura() {
+    if (!processoIniciado) {
+        mostrarNotificacao('Você deve clicar em Iniciar antes de assinar!', 'error');
+        return;
+    }
     if (signaturePad && !signaturePad.isEmpty()) {
         // Obter o ID do programa ativo
         const itemAtivo = document.querySelector('.program-item.active');
         if (itemAtivo) {
             const id = parseInt(itemAtivo.dataset.id);
-            // Salvar assinatura para este programa
-            programSignatures[id] = signaturePad.toDataURL();
-            
-            // Verificar se o programa já está marcado como concluído
-            const index = programas.findIndex(p => p.id === id);
-            if (index !== -1 && programas[index].status !== 'completed') {
-                // Perguntar se deseja concluir o programa
-                if (confirm('Deseja marcar este programa como concluído?')) {
-                    concluirProcesso();
-                } else {
-                    mostrarNotificacao('Assinatura salva com sucesso!');
-                }
-            } else {
-                mostrarNotificacao('Assinatura salva com sucesso!');
+            // Buscar matrícula e nome do operador automaticamente
+            const matricula = localStorage.getItem('userMatricula');
+            const nome = localStorage.getItem('currentUser');
+            if (!matricula || !nome) {
+                mostrarNotificacao('Usuário não identificado! Faça login novamente.', 'error');
+                return;
             }
+            // Salvar assinatura, matrícula e nome para este programa
+            programSignatures[id] = {
+                assinatura: signaturePad.toDataURL(),
+                matricula,
+                nome
+            };
+            salvarAssinaturasLS(); // Salvar no Local Storage
+            renderizarProgramas(); // Atualizar lista para mostrar assinatura
+            atualizarEstadoConcluirBtn(); // Habilitar botão se necessário
+            mostrarNotificacao('Assinatura salva com sucesso!');
         }
     } else {
-        alert('Por favor, forneça uma assinatura antes de salvar.');
+        mostrarNotificacao('Por favor, forneça uma assinatura antes de salvar.', 'error');
     }
 }
 
@@ -421,6 +441,146 @@ function salvarAssinatura() {
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
+}
+
+// Função para carregar assinaturas do Local Storage
+function carregarAssinaturas() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+        try {
+            const obj = JSON.parse(data);
+            Object.assign(programSignatures, obj);
+        } catch (e) {
+            console.warn('Erro ao carregar assinaturas do localStorage:', e);
+        }
+    }
+}
+
+// Função para salvar assinaturas no Local Storage
+function salvarAssinaturasLS() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(programSignatures));
+}
+
+function atualizarEstadoConcluirBtn() {
+    const concluirBtn = document.getElementById('concluirBtn');
+    const itemAtivo = document.querySelector('.program-item.active');
+    if (concluirBtn && itemAtivo) {
+        const id = parseInt(itemAtivo.dataset.id);
+        const programa = programas.find(p => p.id === id);
+        if (programa && programa.status === 'completed') {
+            concluirBtn.disabled = true;
+        } else {
+            concluirBtn.disabled = !(processoIniciado && programSignatures[id]);
+        }
+    }
+}
+
+function atualizarEstadoSalvarAssinaturaBtn() {
+    const salvarBtn = document.getElementById('saveSignatureBtn');
+    const itemAtivo = document.querySelector('.program-item.active');
+    if (salvarBtn && itemAtivo) {
+        const id = parseInt(itemAtivo.dataset.id);
+        const programa = programas.find(p => p.id === id);
+        if (programa && programa.status === 'completed') {
+            salvarBtn.disabled = true;
+        } else {
+            salvarBtn.disabled = !processoIniciado;
+        }
+    }
+}
+
+function salvarProgramasLS() {
+    localStorage.setItem(PROGRAMS_KEY, JSON.stringify(programas));
+}
+
+function carregarProgramasLS() {
+    const data = localStorage.getItem(PROGRAMS_KEY);
+    if (data) {
+        try {
+            const arr = JSON.parse(data);
+            // Atualiza apenas o status dos programas existentes
+            arr.forEach(savedProg => {
+                const prog = programas.find(p => p.id === savedProg.id);
+                if (prog) prog.status = savedProg.status;
+            });
+        } catch (e) {
+            console.warn('Erro ao carregar status dos programas:', e);
+        }
+    }
+}
+
+function moverProjetoParaHistorico() {
+    console.log("Chamando moverProjetoParaHistorico");
+    // Buscar projetos ativos
+    let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+    console.log("Projetos ativos:", projetos);
+    console.log("projetoId:", projetoId);
+    // Buscar histórico
+    let historico = JSON.parse(localStorage.getItem('historicoProjetos')) || [];
+    // Encontrar o projeto atual pela chave
+    const projetoAtual = projetos[projetoId];
+    console.log("Projeto encontrado:", projetoAtual);
+    if (projetoAtual) {
+        // Garantir que title e code estejam preenchidos
+        if (!projetoAtual.title) {
+            projetoAtual.title = projetoAtual.nome || projetoAtual.code || projetoId || 'Projeto sem nome';
+        }
+        if (!projetoAtual.code) {
+            projetoAtual.code = projetoId;
+        }
+        // Normalizar o campo machine
+        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+        const userMaquina = localStorage.getItem('userMaquina');
+        projetoAtual.machine = mapMaquina[userMaquina] || projetoAtual.machine;
+        // Definir status como completed
+        projetoAtual.status = "completed";
+        // Buscar assinaturas dos programas
+        const assinaturas = JSON.parse(localStorage.getItem('programSignatures_' + projetoId)) || {};
+        // Buscar status dos programas
+        const programasStatus = JSON.parse(localStorage.getItem('programasStatus_' + projetoId)) || [];
+        // Adicionar ao histórico
+        historico.push({
+            ...projetoAtual,
+            completionDate: new Date().toISOString(),
+            programas: programasStatus,
+            assinaturas: assinaturas
+        });
+        // Remover dos projetos ativos
+        delete projetos[projetoId];
+        // Salvar
+        localStorage.setItem('projetos', JSON.stringify(projetos));
+        localStorage.setItem('historicoProjetos', JSON.stringify(historico));
+        console.log("Projeto salvo no historicoProjetos:", historico);
+    } else {
+        console.log("Nenhum projeto encontrado para transferir para o histórico.");
+    }
+}
+
+// Chame moverProjetoParaHistorico() quando o progresso chegar a 100%
+function atualizarProgressoProjeto() {
+    const total = programas.length;
+    const concluidos = programas.filter(p => p.status === 'completed').length;
+    const progresso = Math.round((concluidos / total) * 100);
+    localStorage.setItem('progresso_' + projetoId, progresso);
+    if (progresso === 100) {
+        moverProjetoParaHistorico();
+    }
+}
+
+// Função para buscar detalhes do projeto com fallback
+function getDetalhesProjeto(projetoId) {
+    // 1. Tenta buscar no localStorage
+    let detalhes = JSON.parse(localStorage.getItem('detalhesProjeto_' + projetoId));
+    if (detalhes) return detalhes;
+
+    // 2. Tenta buscar no array de exemplos (projectsData)
+    if (typeof projectsData !== 'undefined') {
+        const projetoExemplo = projectsData.find(p => p.id == projetoId || p.code == projetoId);
+        if (projetoExemplo) return projetoExemplo;
+    }
+
+    // 3. Se não encontrar, retorna null
+    return null;
 }
 
 

@@ -3,6 +3,7 @@
 let filteredItems = [];
 let currentPage = 1;
 const itemsPerPage = 10;
+let historico = JSON.parse(localStorage.getItem('historicoProjetos')) || [];
 
 // Elementos DOM
 const historicoContainer = document.getElementById('historicoContainer');
@@ -37,8 +38,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log(`Usuário logado: ${userName}, Função: ${userRole}`);
     
-    // Carregar todos os itens do histórico, sem filtro por responsável
-    filteredItems = [...historicoData];
+    const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+    const maquinaSelecionada = localStorage.getItem('userMaquina');
+    let historicoFiltrado = historico;
+    if (maquinaSelecionada && mapMaquina[maquinaSelecionada]) {
+        historicoFiltrado = historico.filter(item => 
+            item.machine && item.machine.trim().toUpperCase() === mapMaquina[maquinaSelecionada].toUpperCase()
+        );
+    }
+    filteredItems = [...historicoFiltrado];
+    if (filteredItems.length === 0) {
+        const container = document.getElementById('historicoContainer');
+        if (container) {
+            container.innerHTML = `<div class='empty-state'><i class='fas fa-history'></i><h3>Nenhum projeto concluído encontrado para esta máquina.</h3></div>`;
+        }
+    }
+    
     // Carregar histórico inicial já filtrando por máquina
     applyFilters();
     
@@ -65,18 +80,17 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('view-details-btn')) {
             console.log('Botão Ver Detalhes clicado');
-            const projectId = parseInt(e.target.getAttribute('data-id'));
+            const projectId = e.target.getAttribute('data-id');
             console.log(`ID do projeto: ${projectId}`);
-            
-            // Encontrar o projeto pelo ID
-            const project = historicoData.find(p => p.id === projectId);
+            // Encontrar o projeto pelo ID ou code
+            const project = historico.find(p => (p.id && p.id.toString() === projectId) || (p.code && p.code === projectId));
             if (project) {
                 console.log("Projeto encontrado:", project);
                 showProjectModal(project);
             } else {
                 console.error("Projeto não encontrado com ID:", projectId);
-                console.log("Dados disponíveis:", historicoData);
-                alert("Projeto não encontrado!");
+                console.log("Dados disponíveis:", historico);
+                mostrarNotificacao("Projeto não encontrado!", 'error');
             }
         }
     });
@@ -131,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         importarBtn.addEventListener('click', function() {
             if(previewData.length > 1) {
-                alert('Importação simulada! (Aqui você pode enviar para o backend ou atualizar a lista de projetos)');
+                mostrarNotificacao('Importação simulada! (Aqui você pode enviar para o backend ou atualizar a lista de projetos)', 'success');
                 // Aqui você pode adicionar lógica para realmente importar os dados
             }
         });
@@ -146,7 +160,9 @@ function applyFilters() {
     const maquinaSelecionada = localStorage.getItem('userMaquina');
     const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
 
-    filteredItems = historicoData.filter(item => {
+    filteredItems = historico.filter(item => {
+        // Filtro por status: apenas projetos finalizados
+        if (item.status !== 'completed') return false;
         // Filtro por máquina (obrigatório)
         if (maquinaSelecionada && ['01','02','03'].includes(maquinaSelecionada)) {
             if (item.machine.trim().toUpperCase() !== mapMaquina[maquinaSelecionada].toUpperCase()) {
@@ -154,10 +170,10 @@ function applyFilters() {
             }
         }
         // Filtro de busca
-        const matchesSearch = 
-            item.title.toLowerCase().includes(searchTerm) ||
-            item.code.toLowerCase().includes(searchTerm) ||
-            item.machine.toLowerCase().includes(searchTerm);
+        const matchesSearch =
+            (item.title && item.title.toLowerCase().includes(searchTerm)) ||
+            (item.code && item.code.toLowerCase().includes(searchTerm)) ||
+            (item.machine && item.machine.toLowerCase().includes(searchTerm));
         // Filtro de data
         let matchesDate = true;
         if (dateValue !== 'all') {
@@ -257,7 +273,7 @@ function renderHistorico() {
             </div>
             <div class="projeto-footer">
                 <span class="status-badge ${statusClass}">${statusText}</span>
-                <button class="view-details-btn" data-id="${item.id}">Ver Detalhes</button>
+                <button class="view-details-btn" data-id="${item.id || item.code}">Ver Detalhes</button>
             </div>
         `;
         
@@ -307,6 +323,27 @@ function isThisMonth(date, today) {
 
 function isThisYear(date, today) {
     return date.getFullYear() === today.getFullYear();
+}
+
+function renderizarProgramasHistorico(programas, assinaturas) {
+    const lista = document.getElementById('modalProgramsList');
+    lista.innerHTML = '';
+    programas.forEach(prog => {
+        const li = document.createElement('div');
+        li.className = 'programa-item';
+        let assinaturaHTML = '';
+        if (assinaturas && assinaturas[prog.id]) {
+            const info = assinaturas[prog.id];
+            assinaturaHTML = `
+                <div class="assinatura-info" style="display:inline-flex;align-items:center;gap:8px;margin-left:10px;">
+                    <img src="${info.assinatura}" alt="Assinatura" style="max-width:60px;max-height:30px;border:1px solid #ccc;background:#fff;" />
+                    <span style="font-size:0.9em;">${info.matricula}</span>
+                </div>
+            `;
+        }
+        li.innerHTML = `<span>${prog.nome} (${prog.status === 'completed' ? 'Concluído' : 'Pendente'})</span>${assinaturaHTML}`;
+        lista.appendChild(li);
+    });
 }
 
 

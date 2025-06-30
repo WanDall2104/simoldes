@@ -498,4 +498,40 @@ footer {
     }
 }
 
+/* Toast/Alerta customizado */
+.custom-alert-toast {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 300px;
+    max-width: 90vw;
+    background: #1b5e20;
+    color: #fff;
+    font-size: 1.1rem;
+    padding: 18px 32px 18px 24px;
+    border-radius: 8px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: fadeInDown 0.4s;
+}
+.custom-alert-toast.error {
+    background: #c62828;
+}
+.custom-alert-toast .custom-alert-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.3em;
+    margin-left: 16px;
+    cursor: pointer;
+}
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translate(-50%, -30px);}
+    to   { opacity: 1; transform: translate(-50%, 0);}
+}
+
 

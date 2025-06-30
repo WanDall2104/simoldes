@@ -425,8 +425,9 @@ body {
     border-radius: 6px;
     padding: 12px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    gap: 10px;
     border-left: 4px solid var(--gray);
     transition: all 0.3s ease;
 }
@@ -1350,13 +1351,34 @@ input:focus, button:focus {
 
 .program-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px 15px;
-    background-color: #f9f9f9;
-    border-radius: 6px;
-    border-left: 4px solid #ccc;
-    transition: all 0.2s ease;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.assinatura-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.assinatura-img {
+    max-width: 80px;
+    max-height: 40px;
+    border: 1px solid #ccc;
+    background: #fff;
+}
+
+.assinatura-dados {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85em;
+    color: #333;
+    line-height: 1.1;
+}
+
+.assinatura-matricula {
+    font-weight: bold;
 }
 
 .program-item.completed {
@@ -2459,8 +2481,6 @@ input:focus, button:focus {
     gap: 8px;
     padding: 10px 16px;
     border-radius: 4px;
-    font-weight: 500;
-    font-size: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;

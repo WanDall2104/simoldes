@@ -152,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Carregar todos os projetos do localStorage (ou exemplos)
     filteredProjects = getAllProjects();
+    verificarProjetosConcluidos();
     applyFilters();
     
     // Configurar eventos
@@ -310,8 +311,20 @@ function renderProjects() {
     
     // Renderizar cada projeto
     currentProjects.forEach(project => {
-        const statusClass = `status-${project.status}`;
-        const statusText = getStatusText(project.status);
+        // Buscar progresso real salvo no localStorage
+        const progressoSalvo = localStorage.getItem('progresso_' + project.code);
+        const progresso = progressoSalvo !== null ? Number(progressoSalvo) : project.progress || 0;
+
+        // Determinar status dinâmico
+        let statusDinamico = 'pending';
+        if (progresso === 100) {
+            statusDinamico = 'completed';
+        } else if (progresso > 0) {
+            statusDinamico = 'active';
+        }
+
+        const statusClass = `status-${statusDinamico}`;
+        const statusText = getStatusText(statusDinamico);
         const canManipulate = userRole === 'operador' && project.machine === userName;
         const isAdmin = userRole === 'admin' || userRole === 'administrador';
         const projectCard = document.createElement('div');
@@ -330,9 +343,9 @@ function renderProjects() {
                 <h3 class="project-title">${project.title}</h3>
                 <p class="project-code">${project.code}</p>
                 <div class="project-progress-bar">
-                    <div class="progress-fill" style="width: ${project.progress}%"></div>
+                    <div class="progress-fill" style="width: ${progresso}%"></div>
                 </div>
-                <div class="progress-percentage">${project.progress}% concluído</div>
+                <div class="progress-percentage">${progresso}% concluído</div>
                 <a href="folhaprocesso.html?codigo=${project.code}" class="view-details-btn" data-id="${project.id}">
                     ${canManipulate ? 'Editar Projeto' : 'Ver Detalhes'}
                 </a>
@@ -483,6 +496,32 @@ function showStyledConfirm(message, onConfirm) {
     document.getElementById('confirmNoBtn').onclick = function() {
         modal.remove();
     };
+}
+
+function moverProjetoParaHistoricoDashboard(projetoAtual, projetoId) {
+    let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+    let historico = JSON.parse(localStorage.getItem('historicoProjetos')) || [];
+    const assinaturas = JSON.parse(localStorage.getItem('programSignatures_' + projetoId)) || {};
+    const programasStatus = JSON.parse(localStorage.getItem('programasStatus_' + projetoId)) || [];
+    historico.push({
+        ...projetoAtual,
+        concluidoEm: new Date().toISOString(),
+        programas: programasStatus,
+        assinaturas: assinaturas
+    });
+    delete projetos[projetoAtual.code];
+    localStorage.setItem('projetos', JSON.stringify(projetos));
+    localStorage.setItem('historicoProjetos', JSON.stringify(historico));
+}
+
+function verificarProjetosConcluidos() {
+    let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+    Object.values(projetos).forEach(proj => {
+        const progresso = localStorage.getItem('progresso_' + proj.code);
+        if (Number(progresso) === 100) {
+            moverProjetoParaHistoricoDashboard(proj, proj.code);
+        }
+    });
 }
 
 

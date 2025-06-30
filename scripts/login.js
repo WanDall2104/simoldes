@@ -93,6 +93,12 @@ async function fazerLogin(event) {
         return;
     }
     
+    const maquinasValidas = ['01', '02', '03']; // Adapte conforme necessário
+    if (!maquinasValidas.includes(maquina)) {
+        mostrarMensagem('error', 'Número de máquina inválido!');
+        return;
+    }
+    
     try {
         // Envia para a API do backend
         const resposta = await fetch('http://localhost:3000/api/login', {

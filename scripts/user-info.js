@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         importarBtn.addEventListener('click', function() {
             if(previewData.length > 1) {
-                alert('Importação simulada! (Aqui você pode enviar para o backend ou atualizar a lista de projetos)');
+                mostrarNotificacao('Importação simulada! (Aqui você pode enviar para o backend ou atualizar a lista de projetos)', 'success');
                 // Aqui você pode adicionar lógica para realmente importar os dados
             }
         });
