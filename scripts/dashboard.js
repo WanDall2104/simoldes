@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 code: proj.code || '',
                 status: proj.status || 'active',
                 progress: proj.progress || 0,
-                programas: proj.programas || []
+                programas: proj.programas || [],
+                machine: proj.machine || ''
             }));
         } catch (e) {
             localProjects = [];
@@ -47,9 +48,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const projetos = getAllProjects();
         let ativos = 0, pendentes = 0;
 
-        projetos.forEach(proj => {
+        // Obter máquina logada
+        const maquinaSelecionada = localStorage.getItem('userMaquina');
+        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+        const nomeMaquina = mapMaquina[maquinaSelecionada] || null;
+
+        // Filtrar projetos pela máquina logada
+        const projetosFiltrados = nomeMaquina ? projetos.filter(p => p.machine && p.machine.trim().toUpperCase() === nomeMaquina.toUpperCase()) : projetos;
+
+        projetosFiltrados.forEach(proj => {
             const progresso = getProgressoProjeto(proj.code, proj.progress);
-            if (progresso > 0 && progresso < 100) {
+            if (progresso < 100) {
                 // Buscar status dos programas do projeto
                 const statusKey = 'programasStatus_' + proj.code;
                 const arr = JSON.parse(localStorage.getItem(statusKey));
@@ -69,7 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Projetos concluídos (apenas do histórico)
         const historico = JSON.parse(localStorage.getItem('historicoProjetos')) || [];
-        const concluidos = historico.length;
+        const historicoFiltrado = nomeMaquina ? historico.filter(item => item.machine && item.machine.trim().toUpperCase() === nomeMaquina.toUpperCase()) : historico;
+        const concluidos = historicoFiltrado.length;
 
         if (ativosEl) ativosEl.textContent = ativos;
         if (pendentesEl) pendentesEl.textContent = pendentes;

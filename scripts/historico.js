@@ -268,7 +268,7 @@ function renderHistorico() {
                 </div>
                 <div class="detail-item">
                     <i class="fas fa-calendar-check"></i>
-                    <span>Concluído em: <strong>${item.completionDate ? formatDate(item.completionDate) : 'Em andamento'}</strong></span>
+                    <span>Concluído em: <strong>${item.completionDate ? formatDate(item.completionDate) : 'Em andamento'}${item.completionTime ? ' às ' + item.completionTime : ''}</strong></span>
                 </div>
             </div>
             <div class="projeto-footer">

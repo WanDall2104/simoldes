@@ -6,6 +6,7 @@ const historicoData = [
         code: "PF-2023-001",
         machine: "F1400",
         completionDate: "2023-08-15",
+        completionTime: "14:32",
         status: "completed",
         progress: 100,
         programs: [
@@ -20,6 +21,7 @@ const historicoData = [
         code: "CM-2023-042",
         machine: "F2000",
         completionDate: "2023-07-20",
+        completionTime: "09:18",
         status: "completed",
         progress: 100,
         programs: [
@@ -33,6 +35,7 @@ const historicoData = [
         code: "CS-2023-103",
         machine: "F3000",
         completionDate: "2023-09-05",
+        completionTime: "16:45",
         status: "completed",
         progress: 100,
         programs: [
@@ -47,6 +50,7 @@ const historicoData = [
         code: "PC-2023-078",
         machine: "F1400",
         completionDate: "2023-10-12",
+        completionTime: "11:27",
         status: "completed",
         progress: 100,
         programs: [
@@ -60,6 +64,7 @@ const historicoData = [
         code: "CT-2023-156",
         machine: "F2000",
         completionDate: "2023-11-03",
+        completionTime: "08:59",
         status: "completed",
         progress: 100,
         programs: [
