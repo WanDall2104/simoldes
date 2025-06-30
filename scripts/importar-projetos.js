@@ -142,8 +142,59 @@ document.addEventListener('DOMContentLoaded', function() {
         const file = fileInput.files[0];
         if (!file) return;
 
+        // Salvar informações básicas do projeto ao importar
+        const nomeProjeto = document.getElementById('importProjectName').value.trim();
+        const codigoProjeto = document.getElementById('importProjectCode').value.trim();
+        const maquinaSelecionada = localStorage.getItem('userMaquina');
+        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+        const machine = mapMaquina[maquinaSelecionada] || '';
+        // Salvar no localStorage (projeto básico, sem programas detalhados)
+        if (nomeProjeto && codigoProjeto && machine) {
+            let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+            if (!projetos[codigoProjeto]) {
+                projetos[codigoProjeto] = {
+                    title: nomeProjeto,
+                    code: codigoProjeto,
+                    machine: machine,
+                    status: 'active',
+                    startDate: new Date().toISOString().slice(0,10),
+                    progress: 0,
+                    image: 'images/image-molde01.png',
+                    origemArquivo: true // marca que veio do arquivo
+                };
+                localStorage.setItem('projetos', JSON.stringify(projetos));
+            }
+        }
+
         handlePdfFile(file);
     });
+
+    // Preencher campo máquina automaticamente
+    const manualProjectMachineInput = document.getElementById('manualProjectMachine');
+    if (manualProjectMachineInput) {
+        const maquinaSelecionada = localStorage.getItem('userMaquina');
+        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+        manualProjectMachineInput.value = mapMaquina[maquinaSelecionada] || '';
+    }
+    const fileProjectMachineInput = document.getElementById('fileProjectMachine');
+    if (fileProjectMachineInput) {
+        const maquinaSelecionada = localStorage.getItem('userMaquina');
+        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+        fileProjectMachineInput.value = mapMaquina[maquinaSelecionada] || '';
+    }
+
+    // Preencher campo código do projeto automaticamente na aba de importação via arquivo
+    const importProjectCodeInput = document.getElementById('importProjectCode');
+    if (importProjectCodeInput && typeof gerarCodigoProjeto === 'function') {
+        importProjectCodeInput.value = gerarCodigoProjeto();
+        // Atualizar ao trocar de aba
+        const tabArquivoBtn = document.querySelector('.tab-button[data-tab="arquivo"]');
+        if (tabArquivoBtn) {
+            tabArquivoBtn.addEventListener('click', function() {
+                importProjectCodeInput.value = gerarCodigoProjeto();
+            });
+        }
+    }
 
     function handlePdfFile(file) {
         const reader = new FileReader();

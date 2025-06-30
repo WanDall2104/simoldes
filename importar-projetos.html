@@ -67,8 +67,8 @@
                                         <input type="text" id="programNumber" required readonly>
                                     </div>
                                     <div class="form-group">
-                                        <label for="machineValue">Máquina:</label>
-                                        <input type="text" id="machineValue" disabled placeholder="Selecionada automaticamente">
+                                        <label for="manualProjectMachine">Máquina:</label>
+                                        <input type="text" id="manualProjectMachine" disabled>
                                     </div>
                                 </div>
                                 <div class="form-section">
@@ -225,23 +225,20 @@
                         </div>
 
                         <!-- Aba de Importação via Arquivo -->
-                        <div class="form-section">
-                            <h3>Informações Básicas do Projeto</h3>
-                            <div class="form-group">
-                                <label for="materialValue">Nome do Projeto:</label>
-                                <input type="text" id="materialValue" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="programNumber">Código do Projeto:</label>
-                                <input type="text" id="programNumber" required readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="machineValue">Máquina:</label>
-                                <input type="text" id="machineValue" disabled placeholder="Selecionada automaticamente">
-                            </div>
-                        </div>
                         <div id="arquivo" class="tab-pane">
                             <form id="importarExcelForm">
+                                <div class="form-group">
+                                    <label for="importProjectName">Nome do Projeto:</label>
+                                    <input type="text" id="importProjectName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="importProjectCode">Código do Projeto:</label>
+                                    <input type="text" id="importProjectCode" required readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fileProjectMachine">Máquina:</label>
+                                    <input type="text" id="fileProjectMachine" disabled>
+                                </div>
                                 <div class="file-import-section">
                                     <div class="file-type-selector">
                                         <label>
