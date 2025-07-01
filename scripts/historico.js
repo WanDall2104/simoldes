@@ -10,7 +10,6 @@ const historicoContainer = document.getElementById('historicoContainer');
 const searchBtn = document.getElementById('searchBtn');
 const historicoSearch = document.getElementById('historicoSearch');
 const dateFilter = document.getElementById('dateFilter');
-const machineFilter = document.getElementById('machineFilter');
 const prevPageBtn = document.getElementById('prevPage');
 const nextPageBtn = document.getElementById('nextPage');
 const currentPageEl = document.getElementById('currentPage');
@@ -38,23 +37,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log(`Usuário logado: ${userName}, Função: ${userRole}`);
     
-    const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
-    const maquinaSelecionada = localStorage.getItem('userMaquina');
-    let historicoFiltrado = historico;
-    if (maquinaSelecionada && mapMaquina[maquinaSelecionada]) {
-        historicoFiltrado = historico.filter(item => 
-            item.machine && item.machine.trim().toUpperCase() === mapMaquina[maquinaSelecionada].toUpperCase()
-        );
-    }
-    filteredItems = [...historicoFiltrado];
-    if (filteredItems.length === 0) {
-        const container = document.getElementById('historicoContainer');
-        if (container) {
-            container.innerHTML = `<div class='empty-state'><i class='fas fa-history'></i><h3>Nenhum projeto concluído encontrado para esta máquina.</h3></div>`;
-        }
-    }
+    // Inicializar com todos os itens do histórico
+    filteredItems = [...historico];
     
-    // Carregar histórico inicial já filtrando por máquina
+    // Carregar histórico inicial
     applyFilters();
     
     // Configurar eventos
@@ -71,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     dateFilter.addEventListener('change', applyFilters);
-    machineFilter.addEventListener('change', applyFilters);
     
     prevPageBtn.addEventListener('click', goToPrevPage);
     nextPageBtn.addEventListener('click', goToNextPage);
@@ -156,24 +141,17 @@ document.addEventListener('DOMContentLoaded', function() {
 function applyFilters() {
     const searchTerm = historicoSearch.value.toLowerCase();
     const dateValue = dateFilter.value;
-    const userRole = localStorage.getItem('userRole');
-    const maquinaSelecionada = localStorage.getItem('userMaquina');
-    const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
 
     filteredItems = historico.filter(item => {
         // Filtro por status: apenas projetos finalizados
         if (item.status !== 'completed') return false;
-        // Filtro por máquina (obrigatório)
-        if (maquinaSelecionada && ['01','02','03'].includes(maquinaSelecionada)) {
-            if (item.machine.trim().toUpperCase() !== mapMaquina[maquinaSelecionada].toUpperCase()) {
-                return false;
-            }
-        }
+        
         // Filtro de busca
         const matchesSearch =
             (item.title && item.title.toLowerCase().includes(searchTerm)) ||
             (item.code && item.code.toLowerCase().includes(searchTerm)) ||
             (item.machine && item.machine.toLowerCase().includes(searchTerm));
+        
         // Filtro de data
         let matchesDate = true;
         if (dateValue !== 'all') {
