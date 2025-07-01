@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verificar nível de acesso do usuário
     const userRole = localStorage.getItem('userRole');
     const userName = localStorage.getItem('currentUser');
+    const userMatricula = localStorage.getItem('userMatricula');
     
     // Verificar se o usuário está logado
     if (!userName) {
@@ -39,6 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar com todos os itens do histórico
     filteredItems = [...historico];
+
+    // FILTRO: Se for operador, só mostrar projetos que ele assinou pelo menos um programa
+    if (userRole !== 'admin' && userRole !== 'administrador') {
+        filteredItems = filteredItems.filter(item => {
+            if (!item.assinaturas) return false;
+            // Verifica se alguma assinatura do projeto é da matrícula do operador
+            return Object.values(item.assinaturas).some(ass => ass.matricula === userMatricula);
+        });
+    }
     
     // Carregar histórico inicial
     applyFilters();
@@ -141,11 +151,19 @@ document.addEventListener('DOMContentLoaded', function() {
 function applyFilters() {
     const searchTerm = historicoSearch.value.toLowerCase();
     const dateValue = dateFilter.value;
+    const userRole = localStorage.getItem('userRole');
+    const userMaquina = localStorage.getItem('userMaquina');
+    const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
+    let nomeMaquina = mapMaquina[userMaquina] || null;
 
     filteredItems = historico.filter(item => {
         // Filtro por status: apenas projetos finalizados
         if (item.status !== 'completed') return false;
         
+        // Filtro por máquina (agora para todos)
+        if (nomeMaquina && (!item.machine || item.machine.trim().toUpperCase() !== nomeMaquina.toUpperCase())) {
+            return false;
+        }
         // Filtro de busca
         const matchesSearch =
             (item.title && item.title.toLowerCase().includes(searchTerm)) ||
@@ -230,10 +248,15 @@ function renderHistorico() {
     currentItems.forEach(item => {
         const statusClass = `status-${item.status}`;
         const statusText = getStatusText(item.status);
-        
+        const userRole = localStorage.getItem('userRole');
+        const userMatricula = localStorage.getItem('userMatricula');
+        let podeVerDetalhes = true;
+        // Se for operador, só mostra o botão se assinou pelo menos um programa
+        if (userRole !== 'admin' && userRole !== 'administrador') {
+            podeVerDetalhes = item.assinaturas && Object.values(item.assinaturas).some(ass => ass.matricula === userMatricula);
+        }
         const itemCard = document.createElement('div');
         itemCard.className = 'projeto-card';
-        
         itemCard.innerHTML = `
             <div class="projeto-header">
                 <h3 class="projeto-title">${item.title}</h3>
@@ -251,10 +274,9 @@ function renderHistorico() {
             </div>
             <div class="projeto-footer">
                 <span class="status-badge ${statusClass}">${statusText}</span>
-                <button class="view-details-btn" data-id="${item.id || item.code}">Ver Detalhes</button>
+                ${podeVerDetalhes ? `<button class="view-details-btn" data-id="${item.id || item.code}">Ver Detalhes</button>` : ''}
             </div>
         `;
-        
         historicoContainer.appendChild(itemCard);
     });
 }
@@ -306,7 +328,16 @@ function isThisYear(date, today) {
 function renderizarProgramasHistorico(programas, assinaturas) {
     const lista = document.getElementById('modalProgramsList');
     lista.innerHTML = '';
+    // Verifica papel do usuário
+    const userRole = localStorage.getItem('userRole');
+    const userMatricula = localStorage.getItem('userMatricula');
+    let count = 0;
     programas.forEach(prog => {
+        // Se for operador, só mostra programas que ele assinou
+        if (userRole !== 'admin' && userRole !== 'administrador') {
+            if (!assinaturas || !assinaturas[prog.id] || assinaturas[prog.id].matricula !== userMatricula) return;
+        }
+        count++;
         const li = document.createElement('div');
         li.className = 'programa-item';
         let assinaturaHTML = '';
@@ -315,13 +346,16 @@ function renderizarProgramasHistorico(programas, assinaturas) {
             assinaturaHTML = `
                 <div class="assinatura-info" style="display:inline-flex;align-items:center;gap:8px;margin-left:10px;">
                     <img src="${info.assinatura}" alt="Assinatura" style="max-width:60px;max-height:30px;border:1px solid #ccc;background:#fff;" />
-                    <span style="font-size:0.9em;">${info.matricula}</span>
+                    ${userRole === 'admin' || userRole === 'administrador' ? `<span style='font-size:0.9em;'>${info.matricula}</span>` : ''}
                 </div>
             `;
         }
         li.innerHTML = `<span>${prog.nome} (${prog.status === 'completed' ? 'Concluído' : 'Pendente'})</span>${assinaturaHTML}`;
         lista.appendChild(li);
     });
+    if (count === 0) {
+        lista.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i> Nenhum programa assinado por você neste projeto.</div>';
+    }
 }
 
 

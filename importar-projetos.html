@@ -46,15 +46,48 @@
                 </div>
                 <div class="tabs-container">
                     <div class="tabs">
-                        <button class="tab-button" data-tab="arquivo">Importar Projetos via Arquivo</button>
-                        <button class="tab-button active" data-tab="manual">Entrada Manual</button>
+                        <button class="tab-button active" data-tab="arquivo">Importar Projetos via Arquivo</button>
+                        <button class="tab-button" data-tab="manual">Entrada Manual</button>
                         <button class="tab-button" data-tab="programas">Inserir novos Programas</button>
                         <button class="tab-button" id="tabFolhaDetalhesBtn" data-tab="folhaDetalhes" style="display:none;">Detalhes da Folha</button>
                     </div>
                     
                     <div class="tab-content">
+
+                        <!-- Aba de Importação via Arquivo -->
+                        <div id="arquivo" class="tab-pane active">
+                            <form id="importarExcelForm">
+                                <div class="form-section">
+                                    <h3>Informações Básicas do Projeto</h3>
+                                    <div class="form-group">
+                                        <label for="arquivoProjectName">Nome do Projeto:</label>
+                                        <input type="text" id="arquivoProjectName">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="arquivoProjectCode">Código do Projeto:</label>
+                                        <input type="text" id="arquivoProjectCode" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="arquivoProjectMachine">Máquina:</label>
+                                        <input type="text" id="arquivoProjectMachine" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="file-import-section">
+                                            <input type="file" id="arquivoFileInput" accept=".pdf" />
+                                            <button type="button" id="arquivoPreVisualizarBtn">Pré-visualizar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-section">
+                                    <h3>Prévia do Conteúdo PDF</h3>
+                                    <div id="arquivoPreviewContainer"></div>
+                                </div>
+                                <button id="importarBtn" class="import-button">Importar Dados</button>
+                            </form>
+                        </div>
+
                         <!-- Aba de Entrada Manual -->
-                        <div id="manual" class="tab-pane active">
+                        <div id="manual" class="tab-pane">
                             <form id="formProjetoCompleto" class="manual-form">
                                 <div class="form-section">
                                     <h3>Informações Básicas do Projeto</h3>
@@ -224,38 +257,8 @@
                             </form>
                         </div>
 
-                        <!-- Aba de Importação via Arquivo -->
-                        <div id="arquivo" class="tab-pane">
-                            <form id="importarExcelForm">
-                                <div class="form-group">
-                                    <label for="importProjectName">Nome do Projeto:</label>
-                                    <input type="text" id="importProjectName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="importProjectCode">Código do Projeto:</label>
-                                    <input type="text" id="importProjectCode" required readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fileProjectMachine">Máquina:</label>
-                                    <input type="text" id="fileProjectMachine" disabled>
-                                </div>
-                                <div class="file-import-section">
-                                    <div class="file-type-selector">
-                                        <label>
-                                            <input type="radio" name="fileType" value="pdf" checked> PDF (.pdf)
-                                        </label>
-                                    </div>
-                                    <input type="file" id="fileInput" accept=".pdf" required />
-                                    <button type="submit">Pré-visualizar</button>
-                                </div>
-                                <div id="previewContainer"></div>
-                                <button id="importarBtn" class="import-button">Importar Dados</button>
-                            </form>
-                        </div>
-
                         <!-- Aba de Inserir Programas -->
                         <div id="programas" class="tab-pane">
-                            <!-- Seleção do Projeto -->
                             <form id="selecionarProjetoForm">
                                 <div class="form-section">
                                     <h3>Selecionar Projeto</h3>
@@ -270,7 +273,6 @@
                                 </div>
                             </form>
 
-                            <!-- Opções de Inserção -->
                             <div id="opcoesInsercao" style="display:none; margin-top: 20px;">
                                 <h3>Como deseja inserir o novo programa?</h3>
                                 <button type="button" id="btnManual">Inserir Manualmente</button>
@@ -370,15 +372,15 @@
                             <form id="importarProgramaArquivoForm" style="display:none;">
                                 <div class="form-section">
                                     <h3>Importar Programa via Arquivo</h3>
-                                    <div class="file-type-selector">
-                                        <label>
-                                            <input type="radio" name="fileType" value="pdf" checked> PDF (.pdf)
-                                        </label>
+                                    <div class="form-group">
+                                        <input type="file" id="fileInput" accept=".pdf" required />
+                                        <button type="submit">Pré-visualizar</button>
                                     </div>
-                                    <input type="file" id="fileInput" accept=".pdf" required />
-                                    <button type="submit">Pré-visualizar</button>
                                 </div>
-                                <div id="previewContainer"></div>
+                                <div class="form-section">
+                                    <h3>Prévia do Conteúdo PDF</h3>
+                                    <div id="previewContainer"></div>
+                                </div>
                                 <button id="importarBtn" class="import-button">Importar Programa</button>
                             </form>
                         </div>

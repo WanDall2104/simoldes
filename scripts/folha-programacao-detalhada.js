@@ -11,7 +11,8 @@ const PROGRAMS_KEY = 'programasStatus_' + projetoId;
 
 let processoIniciado = false;
 
-const programas = [
+// Array fixo de programas (exemplo)
+const programasFixos = [
     { id: 7, nome: 'Programa: 07', status: 'pending', descricao: 'O contramolde foi aparecer aqui' },
     { id: 8, nome: 'Programa: 08', status: 'pending' },
     { id: 9, nome: 'Programa: 09', status: 'pending' },
@@ -21,6 +22,20 @@ const programas = [
     { id: 13, nome: 'Programa: 13', status: 'pending' },
     { id: 14, nome: 'Programa: 14', status: 'pending' },
     { id: 15, nome: 'Programa: 15', status: 'pending' }
+];
+
+// Carregar programas reais do projeto selecionado
+const projetosLS = JSON.parse(localStorage.getItem('projetos')) || {};
+const projetoLS = projetosLS[projetoId];
+let programasProjeto = (projetoLS && Array.isArray(projetoLS.programas)) ? projetoLS.programas : [];
+if (!Array.isArray(programasProjeto)) programasProjeto = [];
+
+// Juntar os dois arrays, evitando duplicidade pelo número ou id
+const todosProgramas = [
+    ...programasFixos,
+    ...programasProjeto.filter(
+        novo => !programasFixos.some(fixo => (fixo.numero && novo.numero && fixo.numero == novo.numero) || (fixo.id && novo.id && fixo.id == novo.id))
+    )
 ];
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -86,55 +101,50 @@ document.addEventListener('DOMContentLoaded', function() {
     // Renderizar lista de programas
     function renderizarProgramas() {
         programItemsContainer.innerHTML = '';
-        
-        programas.forEach(programa => {
+        todosProgramas.forEach((programa, idx) => {
             const item = document.createElement('div');
-            item.className = `program-item ${programa.status}`;
-            item.dataset.id = programa.id;
-            
+            item.className = `program-item ${programa.status || 'pending'}`;
+            item.dataset.id = idx;
             // Adicionar assinatura, matrícula e nome se existir
             let assinaturaHTML = '';
-            const assinaturaInfo = programSignatures[programa.id];
+            const assinaturaInfo = programSignatures[idx];
             if (assinaturaInfo) {
+                // Verifica se o usuário é admin
+                const userRole = localStorage.getItem('userRole');
+                const isAdmin = userRole === 'admin' || userRole === 'administrador';
                 assinaturaHTML = `
                     <div class="assinatura-info">
                         <img src="${assinaturaInfo.assinatura}" alt="Assinatura" class="assinatura-img" style="max-width:80px; max-height:40px; display:block; margin-bottom:2px; border:1px solid #ccc; background:#fff;" />
                         <div class="assinatura-dados">
-                            <span class="assinatura-matricula">Matrícula: ${assinaturaInfo.matricula}</span><br>
+                            ${isAdmin ? `<span class='assinatura-matricula'>Matrícula: ${assinaturaInfo.matricula}</span><br>` : ''}
                             <span class="assinatura-nome">${assinaturaInfo.nome}</span>
                         </div>
                     </div>
                 `;
             }
-            
             item.innerHTML = `
-                <div class="program-name">${programa.nome}</div>
-                <div class="program-status ${programa.status === 'completed' ? 'completed' : 'pending'}">
-                    ${programa.status === 'completed' ? 'Concluído' : 'Pendente'}
+                <div class="program-name">Programa: ${programa.numero || programa.nome || idx + 1}</div>
+                <div class="program-status ${(programa.status === 'completed') ? 'completed' : 'pending'}">
+                    ${(programa.status === 'completed') ? 'Concluído' : 'Pendente'}
                 </div>
                 ${assinaturaHTML}
             `;
-            
             // Adicionar evento de clique para selecionar programa
             item.addEventListener('click', function() {
-                selecionarPrograma(programa.id);
+                selecionarPrograma(idx);
             });
-            
             programItemsContainer.appendChild(item);
         });
-        
         // Atualizar contadores e barra de progresso
-        const total = programas.length;
-        const completed = programas.filter(p => p.status === 'completed').length;
+        const total = todosProgramas.length;
+        const completed = todosProgramas.filter(p => p.status === 'completed').length;
         const pending = total - completed;
-        
         if (completedCount) completedCount.textContent = completed;
         if (pendingCount) pendingCount.textContent = pending;
         if (totalCount) totalCount.textContent = total;
-        
         // Atualizar barra de progresso
         if (progressFill) {
-            const progressPercent = (completed / total) * 100;
+            const progressPercent = (completed / (total || 1)) * 100;
             progressFill.style.width = `${progressPercent}%`;
             if (progressPercentage) {
                 progressPercentage.textContent = `${Math.round(progressPercent)}%`;
@@ -143,51 +153,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Selecionar um programa
-    function selecionarPrograma(id) {
+    function selecionarPrograma(idx) {
         // Remover classe active de todos os itens
         document.querySelectorAll('.program-item').forEach(item => {
             item.classList.remove('active');
         });
-        
         // Adicionar classe active ao item selecionado
-        const itemSelecionado = document.querySelector(`.program-item[data-id="${id}"]`);
+        const itemSelecionado = document.querySelector(`.program-item[data-id="${idx}"]`);
         if (itemSelecionado) {
             itemSelecionado.classList.add('active');
-            
-            // Rolar para o item selecionado em dispositivos móveis
             if (window.innerWidth < 768) {
                 itemSelecionado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
-        
         // Atualizar detalhes do programa selecionado
-        const programa = programas.find(p => p.id === id);
+        const programa = todosProgramas[idx];
         if (programa) {
-            document.getElementById('currentProgramNumber').textContent = programa.id;
+            document.getElementById('currentProgramNumber').textContent = programa.numero || programa.nome || idx + 1;
             const programStatus = document.getElementById('programStatus');
             if (programStatus) {
-                programStatus.textContent = programa.status === 'completed' ? 'Concluído' : 'Pendente';
-                programStatus.className = `program-status ${programa.status}`;
+                programStatus.textContent = (programa.status === 'completed') ? 'Concluído' : 'Pendente';
+                programStatus.className = `program-status ${programa.status || 'pending'}`;
             }
-            
             // Atualizar descrição se existir
             const descriptionText = document.querySelector('.description-text strong');
             if (descriptionText && programa.descricao) {
                 descriptionText.nextSibling.textContent = ` ${programa.descricao}`;
             }
         }
-        
         // Atualizar número do programa na área de assinatura
         const signatureProgramNumber = document.getElementById('signatureProgramNumber');
         if (signatureProgramNumber) {
-            signatureProgramNumber.textContent = id;
+            signatureProgramNumber.textContent = programa ? (programa.numero || programa.nome || idx + 1) : '-';
         }
-        
         // Limpar assinatura atual e carregar assinatura salva (se existir)
         if (signaturePad) {
             signaturePad.clear();
-            if (programSignatures[id]) {
-                signaturePad.fromDataURL(programSignatures[id].assinatura);
+            if (programSignatures[idx]) {
+                signaturePad.fromDataURL(programSignatures[idx].assinatura);
             }
         }
         processoIniciado = false;
@@ -225,26 +228,25 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Concluir processo
     function concluirProcesso() {
-        // Obter o ID do programa ativo
+        // Obter o índice do programa ativo
         const itemAtivo = document.querySelector('.program-item.active');
         if (itemAtivo) {
-            const id = parseInt(itemAtivo.dataset.id);
+            const idx = parseInt(itemAtivo.dataset.id);
             // Verificar se existe assinatura salva para este programa
-            if (!programSignatures[id]) {
+            if (!programSignatures[idx]) {
                 mostrarNotificacao('A assinatura é obrigatória para concluir o processo!', 'error');
                 return;
             }
             pausarTimer();
-            const index = programas.findIndex(p => p.id === id);
-            if (index !== -1) {
-                programas[index].status = 'completed';
+            if (todosProgramas[idx]) {
+                todosProgramas[idx].status = 'completed';
                 salvarProgramasLS(); // Salvar status ao concluir
                 atualizarProgressoProjeto(); // Atualizar progresso ao concluir
                 renderizarProgramas();
                 // Selecionar o próximo programa pendente
-                const proximoPendente = programas.find(p => p.status === 'pending');
+                const proximoPendente = todosProgramas.find(p => p.status === 'pending');
                 if (proximoPendente) {
-                    selecionarPrograma(proximoPendente.id);
+                    selecionarPrograma(todosProgramas.indexOf(proximoPendente));
                 }
                 // Mostrar feedback visual
                 mostrarNotificacao('Programa concluído com sucesso!');
@@ -357,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
         finalizarCheckbox.addEventListener('change', function() {
             console.log("Checkbox de finalizar projeto alterado");
             if (this.checked) {
-                const todosConcluidos = programas.every(p => p.status === 'completed');
+                const todosConcluidos = todosProgramas.every(p => p.status === 'completed');
                 if (!todosConcluidos) {
                     mostrarNotificacao('Todos os programas devem ser concluídos antes de finalizar o projeto.', 'error');
                     this.checked = false;
@@ -425,8 +427,8 @@ document.addEventListener('DOMContentLoaded', function() {
     renderizarProgramas();
     
     // Selecionar o primeiro programa por padrão
-    if (programas.length > 0) {
-        selecionarPrograma(programas[0].id);
+    if (todosProgramas.length > 0) {
+        selecionarPrograma(0);
     }
     
     // Adicionar listener para redimensionamento da janela
@@ -469,7 +471,7 @@ function salvarAssinatura() {
         // Obter o ID do programa ativo
         const itemAtivo = document.querySelector('.program-item.active');
         if (itemAtivo) {
-            const id = parseInt(itemAtivo.dataset.id);
+            const idx = parseInt(itemAtivo.dataset.id);
             // Buscar matrícula e nome do operador automaticamente
             const matricula = localStorage.getItem('userMatricula');
             const nome = localStorage.getItem('currentUser');
@@ -478,7 +480,7 @@ function salvarAssinatura() {
                 return;
             }
             // Salvar assinatura, matrícula e nome para este programa
-            programSignatures[id] = {
+            programSignatures[idx] = {
                 assinatura: signaturePad.toDataURL(),
                 matricula,
                 nome
@@ -521,12 +523,12 @@ function atualizarEstadoConcluirBtn() {
     const concluirBtn = document.getElementById('concluirBtn');
     const itemAtivo = document.querySelector('.program-item.active');
     if (concluirBtn && itemAtivo) {
-        const id = parseInt(itemAtivo.dataset.id);
-        const programa = programas.find(p => p.id === id);
+        const idx = parseInt(itemAtivo.dataset.id);
+        const programa = todosProgramas[idx];
         if (programa && programa.status === 'completed') {
             concluirBtn.disabled = true;
         } else {
-            concluirBtn.disabled = !(processoIniciado && programSignatures[id]);
+            concluirBtn.disabled = !(processoIniciado && programSignatures[idx]);
         }
     }
 }
@@ -535,8 +537,8 @@ function atualizarEstadoSalvarAssinaturaBtn() {
     const salvarBtn = document.getElementById('saveSignatureBtn');
     const itemAtivo = document.querySelector('.program-item.active');
     if (salvarBtn && itemAtivo) {
-        const id = parseInt(itemAtivo.dataset.id);
-        const programa = programas.find(p => p.id === id);
+        const idx = parseInt(itemAtivo.dataset.id);
+        const programa = todosProgramas[idx];
         if (programa && programa.status === 'completed') {
             salvarBtn.disabled = true;
         } else {
@@ -546,7 +548,7 @@ function atualizarEstadoSalvarAssinaturaBtn() {
 }
 
 function salvarProgramasLS() {
-    localStorage.setItem(PROGRAMS_KEY, JSON.stringify(programas));
+    localStorage.setItem(PROGRAMS_KEY, JSON.stringify(todosProgramas));
 }
 
 function carregarProgramasLS() {
@@ -556,7 +558,7 @@ function carregarProgramasLS() {
             const arr = JSON.parse(data);
             // Atualiza apenas o status dos programas existentes
             arr.forEach(savedProg => {
-                const prog = programas.find(p => p.id === savedProg.id);
+                const prog = todosProgramas.find(p => p.id === savedProg.id);
                 if (prog) prog.status = savedProg.status;
             });
         } catch (e) {
@@ -594,6 +596,10 @@ function moverProjetoParaHistorico() {
         const assinaturas = JSON.parse(localStorage.getItem('programSignatures_' + projetoId)) || {};
         // Buscar status dos programas
         const programasStatus = JSON.parse(localStorage.getItem('programasStatus_' + projetoId)) || [];
+        // Forçar todos os programas como concluídos ao finalizar o projeto
+        if (Array.isArray(programasStatus)) {
+            programasStatus.forEach(p => p.status = 'completed');
+        }
         // Adicionar ao histórico
         historico.push({
             ...projetoAtual,
@@ -614,8 +620,8 @@ function moverProjetoParaHistorico() {
 
 // Chame moverProjetoParaHistorico() quando o progresso chegar a 100%
 function atualizarProgressoProjeto() {
-    const total = programas.length;
-    const concluidos = programas.filter(p => p.status === 'completed').length;
+    const total = todosProgramas.length;
+    const concluidos = todosProgramas.filter(p => p.status === 'completed').length;
     const progresso = Math.round((concluidos / total) * 100);
     localStorage.setItem('progresso_' + projetoId, progresso);
     if (progresso === 100) {

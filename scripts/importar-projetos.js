@@ -130,82 +130,49 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Controle da importação de arquivos
     const importForm = document.getElementById('importarExcelForm');
-    const fileInput = document.getElementById('fileInput');
-    const previewContainer = document.getElementById('previewContainer');
+    const arquivoFileInput = document.getElementById('arquivoFileInput');
+    const arquivoPreviewContainer = document.getElementById('arquivoPreviewContainer');
     const importarBtn = document.getElementById('importarBtn');
+    const arquivoPreVisualizarBtn = document.getElementById('arquivoPreVisualizarBtn');
 
     // Configurar PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    importForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const file = fileInput.files[0];
-        if (!file) return;
-
-        // Salvar informações básicas do projeto ao importar
-        const nomeProjeto = document.getElementById('importProjectName').value.trim();
-        const codigoProjeto = document.getElementById('importProjectCode').value.trim();
+    // Preencher campo máquina automaticamente
+    const arquivoProjectMachineInput = document.getElementById('arquivoProjectMachine');
+    if (arquivoProjectMachineInput) {
         const maquinaSelecionada = localStorage.getItem('userMaquina');
         const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
-        const machine = mapMaquina[maquinaSelecionada] || '';
-        // Salvar no localStorage (projeto básico, sem programas detalhados)
-        if (nomeProjeto && codigoProjeto && machine) {
-            let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
-            if (!projetos[codigoProjeto]) {
-                projetos[codigoProjeto] = {
-                    title: nomeProjeto,
-                    code: codigoProjeto,
-                    machine: machine,
-                    status: 'active',
-                    startDate: new Date().toISOString().slice(0,10),
-                    progress: 0,
-                    image: 'images/image-molde01.png',
-                    origemArquivo: true // marca que veio do arquivo
-                };
-                localStorage.setItem('projetos', JSON.stringify(projetos));
-            }
-        }
-
-        handlePdfFile(file);
-    });
-
-    // Preencher campo máquina automaticamente
+        arquivoProjectMachineInput.value = mapMaquina[maquinaSelecionada] || '';
+    }
+    // Preencher campo máquina automaticamente na aba manual
     const manualProjectMachineInput = document.getElementById('manualProjectMachine');
     if (manualProjectMachineInput) {
         const maquinaSelecionada = localStorage.getItem('userMaquina');
         const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
         manualProjectMachineInput.value = mapMaquina[maquinaSelecionada] || '';
     }
-    const fileProjectMachineInput = document.getElementById('fileProjectMachine');
-    if (fileProjectMachineInput) {
-        const maquinaSelecionada = localStorage.getItem('userMaquina');
-        const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
-        fileProjectMachineInput.value = mapMaquina[maquinaSelecionada] || '';
-    }
-
     // Preencher campo código do projeto automaticamente na aba de importação via arquivo
-    const importProjectCodeInput = document.getElementById('importProjectCode');
-    if (importProjectCodeInput && typeof gerarCodigoProjeto === 'function') {
-        importProjectCodeInput.value = gerarCodigoProjeto();
+    const arquivoProjectCodeInput = document.getElementById('arquivoProjectCode');
+    if (arquivoProjectCodeInput && typeof gerarCodigoProjeto === 'function') {
+        arquivoProjectCodeInput.value = gerarCodigoProjeto();
         // Atualizar ao trocar de aba
         const tabArquivoBtn = document.querySelector('.tab-button[data-tab="arquivo"]');
         if (tabArquivoBtn) {
             tabArquivoBtn.addEventListener('click', function() {
-                importProjectCodeInput.value = gerarCodigoProjeto();
+                arquivoProjectCodeInput.value = gerarCodigoProjeto();
             });
         }
     }
 
-    function handlePdfFile(file) {
+    function handlePdfFile(file, callback) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const typedarray = new Uint8Array(e.target.result);
-            
             pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
                 // Processar todas as páginas do PDF
                 const numPages = pdf.numPages;
                 let allText = '';
-                
                 const processPage = function(pageNum) {
                     return pdf.getPage(pageNum).then(function(page) {
                         return page.getTextContent();
@@ -217,16 +184,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         return pageText;
                     });
                 };
-
                 // Processar todas as páginas
                 const promises = [];
                 for (let i = 1; i <= numPages; i++) {
                     promises.push(processPage(i));
                 }
-
                 Promise.all(promises).then(function(pages) {
                     allText = pages.join('\n');
                     displayPdfPreview(allText);
+                    if (typeof callback === 'function') callback();
                 });
             }).catch(function(error) {
                 showCustomAlert('Erro ao ler o arquivo PDF: ' + error.message);
@@ -238,37 +204,74 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayPdfPreview(text) {
         // Remove múltiplos espaços e linhas em branco extras
         let cleanedText = text.replace(/ +/g, ' ').replace(/\n{2,}/g, '\n');
-        previewContainer.innerHTML = '<h3>Prévia do Conteúdo PDF:</h3>';
-        
+        arquivoPreviewContainer.innerHTML = '<h3>Prévia do Conteúdo PDF:</h3>';
         // Criar um container para o texto
         const textContainer = document.createElement('div');
         textContainer.className = 'pdf-preview';
-        
         // Mostrar apenas os primeiros 2000 caracteres para prévia
         const previewText = cleanedText.length > 2000 ? cleanedText.substring(0, 2000) + '...' : cleanedText;
         textContainer.textContent = previewText;
-        
-        previewContainer.appendChild(textContainer);
-        
+        arquivoPreviewContainer.appendChild(textContainer);
         if (cleanedText.length > 2000) {
             const moreInfo = document.createElement('p');
             moreInfo.textContent = `... e mais ${cleanedText.length - 2000} caracteres`;
-            previewContainer.appendChild(moreInfo);
+            arquivoPreviewContainer.appendChild(moreInfo);
         }
     }
 
-    importarBtn.addEventListener('click', function() {
-        // Pega a máquina do login
+    importarBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Validação dos campos obrigatórios
+        const nomeProjeto = document.getElementById('arquivoProjectName').value.trim();
+        const codigoProjeto = document.getElementById('arquivoProjectCode').value.trim();
         const maquinaSelecionada = localStorage.getItem('userMaquina');
         const mapMaquina = { '01': 'F1400', '02': 'F2000', '03': 'F3000' };
         const machine = mapMaquina[maquinaSelecionada] || '';
-        // Aqui você pode adicionar a lógica para importar os dados
-        // Exemplo: ao montar o objeto do projeto, inclua o campo machine
-        // Exemplo fictício:
-        // const projetoImportado = { ...dadosExtraidos, machine };
-        showCustomAlert('Dados importados com sucesso!');
-        previewContainer.innerHTML = '';
-        fileInput.value = '';
+        const file = arquivoFileInput.files[0];
+
+        if (!nomeProjeto) {
+            showCustomAlert('Preencha o nome do projeto.');
+            return;
+        }
+        if (!codigoProjeto) {
+            showCustomAlert('O código do projeto não foi gerado.');
+            return;
+        }
+        if (!machine) {
+            showCustomAlert('A máquina não está definida. Faça login novamente.');
+            return;
+        }
+        if (!file) {
+            showCustomAlert('Selecione um arquivo PDF para importar.');
+            return;
+        }
+
+        // Verifica se já existe um projeto com o mesmo código
+        let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+        if (projetos[codigoProjeto]) {
+            showCustomAlert('Já existe um projeto com este código. Tente novamente.');
+            return;
+        }
+
+        // Salva o projeto básico no localStorage
+        projetos[codigoProjeto] = {
+            title: nomeProjeto,
+            code: codigoProjeto,
+            machine: machine,
+            status: 'active',
+            startDate: new Date().toISOString().slice(0,10),
+            progress: 0,
+            image: 'images/image-molde01.png',
+            origemArquivo: true
+        };
+        localStorage.setItem('projetos', JSON.stringify(projetos));
+        showCustomAlert('Projeto importado com sucesso!');
+        arquivoPreviewContainer.innerHTML = '';
+        arquivoFileInput.value = '';
+        document.getElementById('arquivoProjectName').value = '';
+        if (arquivoProjectCodeInput && typeof gerarCodigoProjeto === 'function') {
+            arquivoProjectCodeInput.value = gerarCodigoProjeto();
+        }
     });
 
     // --- LÓGICA PARA A ABA DE INSERIR PROGRAMAS ---
@@ -294,6 +297,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const projectNumber = document.getElementById('projectNumber').value.trim();
             if(!projectNumber) {
                 showCustomAlert('Informe o número do projeto!');
+                return;
+            }
+            // Verificar se o projeto existe no localStorage
+            let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+            if (!projetos[projectNumber]) {
+                showCustomAlert('Projeto não encontrado. Verifique o número informado.');
+                projetoInfoContainer.innerHTML = '';
+                opcoesInsercao.style.display = 'none';
+                adicionarProgramaForm.style.display = 'none';
+                importarProgramaArquivoForm.style.display = 'none';
                 return;
             }
             // Aqui você pode buscar informações do projeto no backend, se desejar
@@ -329,6 +342,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 showCustomAlert('Informe o número do projeto antes de adicionar um programa!');
                 return;
             }
+            // Verificar se o projeto existe no localStorage
+            let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
+            if (!projetos[projectNumber]) {
+                showCustomAlert('Projeto não encontrado. Não é possível adicionar programa.');
+                return;
+            }
             // Coleta os dados do formulário manual
             const novoPrograma = {
                 numero: document.getElementById('novoProgramNumber').value,
@@ -353,9 +372,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 sub: document.getElementById('novoSubFile').value
             };
             // Salva no localStorage
-            let projetos = JSON.parse(localStorage.getItem('projetos')) || {};
-            if (!projetos[projectNumber]) {
-                projetos[projectNumber] = { programas: [] };
+            if (!Array.isArray(projetos[projectNumber].programas)) {
+                projetos[projectNumber].programas = [];
             }
             projetos[projectNumber].programas.push(novoPrograma);
             localStorage.setItem('projetos', JSON.stringify(projetos));
@@ -374,7 +392,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 showCustomAlert('Selecione um arquivo PDF!');
                 return;
             }
-            handlePdfFile(file);
+            handlePdfFile(file, function() {
+                showCustomAlert('Dados importados com sucesso!');
+            });
+        });
+    }
+
+    if (arquivoPreVisualizarBtn) {
+        arquivoPreVisualizarBtn.addEventListener('click', function() {
+            const file = arquivoFileInput.files[0];
+            if (!file) {
+                showCustomAlert('Selecione um arquivo PDF para pré-visualizar.');
+                return;
+            }
+            handlePdfFile(file, function() {
+                // Apenas mostra a prévia, não salva nada
+            });
         });
     }
 });
